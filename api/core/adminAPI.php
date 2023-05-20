@@ -6,9 +6,10 @@ class AdminAPI {
     private $db;
 
     public function __construct() {
-        $this->db = new Connector;
+        $this->db = Connector::getConnector();
     }
 
+    // TODO: there is no reason for methods like this to be instance methods
     public function getAllPosts($limit, $offset) {
         $stmt = $this->db->prepare('SELECT s.service_id, servicer.user_id, servicer.username, s.title, s.description, s.avg_price
                                     FROM service s

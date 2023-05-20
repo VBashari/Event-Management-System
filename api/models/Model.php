@@ -8,7 +8,7 @@
         protected $db;
 
         public function __construct($tableName) {
-            $this->db = new Connector;
+            $this->db = Connector::getConnector();
             $this->tableName = $tableName;
             
             $stmt = $this->db->prepare("SHOW COLUMNS FROM $this->tableName");

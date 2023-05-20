@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../includes/config.php';
-
 class UserAPI {
     private $db;
     private $userId;
@@ -10,8 +8,6 @@ class UserAPI {
         $this->db = new Connector;
         $this->userId = $userId;
     }
-
-    
 
     public function getRequests($limit, $offset) {
         $stmt = $this->db->prepare('SELECT req.*, user.username AS servicer_username

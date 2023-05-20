@@ -10,10 +10,11 @@ class ServicerAPI {
     protected $userId;
 
     protected function __construct($userId) {
-        $this->db = new Connector;
+        $this->db = Connector::getConnector();
         $this->userId = $userId;
     }
 
+    // TODO: there is no reason for methods like this to be instance methods
     public function getRequests() {
         $stmt = $this->db->prepare('SELECT req.*, user.username AS requester_username
                                     FROM request req

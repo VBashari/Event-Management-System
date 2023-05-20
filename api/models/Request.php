@@ -6,7 +6,7 @@
         private $db;
 
         public function __construct() {
-            $this->db = new Connector;
+            $this->db = Connector::getConnector();
         }
 
         public function insert(array $parameters) {
