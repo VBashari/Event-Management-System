@@ -19,8 +19,8 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($resource) {
     case "users":
-        require_once __DIR__ . "/controllers/AuthController.php";
-        $controller = new AuthController();
+        require_once __DIR__ . "/controllers/UserController.php";
+        $controller = new UserController();
         $controller->processRequest($method, $id);
         break;
     default:

@@ -1,5 +1,13 @@
 <?php
 
+// TODO: Reorganize the code to make it resource oriented
+// Instead of putting user functionalities in one class "UserAPI",
+// have one controller class for every kind of resource and do the authentication there.
+// e.g. UserController: adding users, updating users, deleting users.
+//      EventController: adding events, updating events, deleting events.
+//      ...
+// The main API request will be handled in index.php, which will call the respective controller
+
 class UserAPI {
     private $db;
     private $userId;

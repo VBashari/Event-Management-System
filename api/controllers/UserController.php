@@ -2,7 +2,7 @@
     require_once __DIR__ . '/../models/User.php';
     require_once __DIR__ . "/../utils/utils.php";
 
-    class AuthController {
+    class UserController {
         public function processRequest($method, $id) {
             switch ($method) {
                 case 'GET':
