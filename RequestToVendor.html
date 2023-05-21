@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create an Event </title>
+    <link rel="stylesheet" type="text/css" href="RequestToVendor.css">
+    
+
+</head>
+<body>
+    <h1>Create an Event </h1>
+    <form id="registrationForm">
+        <p>Personal Information</p>
+        <div class="label-box">
+            <label for="name" class="input-label">Name:</label>
+            <input type="text" id="name" class="input-box" required>
+        </div>
+          
+        <div class="label-box">
+            <label for="Email" class="input-label">Email:</label>
+            <input type="text" id="Email" class="input-box" required>
+        </div>
+
+        <div class="label-box">
+            <label for="phoneNumber" class="input-label">Phone Number:</label>
+            <input type="tel" id="phoneNumber" class="input-box" required>
+        </div>
+        <p>Event Information</p>
+        <div class="label-box">
+            <label for="eventName" class="input-label" >Event Name:</label>
+            <input type="text" id="eventName" class="input-box" required>
+        </div>
+        <div class="label-box">
+            <label for="Eventlocation" class="input-label">Event Location:</label>
+            <input type="text" id="Eventlocation" class="input-box" required>
+        </div>
+        <div class="label-box">
+            <label for="EventDate" class="input-label">Event Date:</label>
+            <input type="datetime-local" id="EventDate" class="input-box" required>
+        </div>
+        <div class="label-box">
+            <label for="EventDescription" class="input-label">Event Description:</label>
+            <input type="text" id="EventDescription" class="input-box" required>
+        </div>
+        <div class="label-box">
+            <label for="EventCategory" class="input-label">Event Category:</label>
+            <input type="text" id="EventCategory" class="input-box" required>
+        </div>
+        <p>Ticket Information</p>
+        <div class="label-box">
+            <label for="TicketCost" class="input-label">Ticket Cost:</label>
+            <input type="text" id="TicketCost" class="input-box" required>
+        </div>
+        <div class="label-box">
+            <label for="ticketQuantity" class="input-label">Number of Tickets:</label>
+            <input type="number" id="ticketQuantity" min="1" class="input-box" required>
+        </div>
+        <div class="label-box">
+            <label for="PaymentMethod" class="input-label">Payment Method</label>
+            <input type="number" id="PaymentMethod" class="input-box" >
+          
+          <div id="additionalBox" style="display: none;">
+            
+<div class="row">
+    <div class="col-75">
+      <div class="container">
+        <form action="/action_page.php">
+          <div class="row">
+            <div class="col-50">
+              <h3>Billing Address</h3>
+              <div class="input-group">
+                <label for="fname"><i class="fa fa-user"></i> Full Name</label>
+                <input type="text" id="fname" name="firstname" placeholder="John M. Doe">
+              </div>
+              <div class="input-group">
+                <label for="email"><i class="fa fa-envelope"></i> Email</label>
+                <input type="text" id="email" name="email" placeholder="john@example.com">
+              </div>
+              <div class="input-group">
+                <label for="adr"><i class="fa fa-address-card-o"></i> Address</label>
+                <input type="text" id="adr" name="address" placeholder="542 W. 15th Street">
+              </div>
+              <div class="input-group">
+                <label for="city"><i class="fa fa-institution"></i> City</label>
+                <input type="text" id="city" name="city" placeholder="New York">
+              </div>
+              <div class="row">
+                <div class="col-50">
+                  <div class="input-group">
+                    <label for="state">State</label>
+                    <input type="text" id="state" name="state" placeholder="NY">
+                  </div>
+                </div>
+                <div class="col-50">
+                  <div class="input-group">
+                    <label for="zip">Zip</label>
+                    <input type="text" id="zip" name="zip" placeholder="10001">
+                  </div>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-50">
+              <h3>Payment</h3>
+              <div class="input-group">
+                <label for="fname">Accepted Cards</label>
+                <div class="icon-container">
+                  <i class="fa fa-cc-visa" style="color:navy;"></i>
+                  <i class="fa fa-cc-amex" style="color:blue;"></i>
+                  <i class="fa fa-cc-mastercard" style="color:red;"></i>
+                  <i class="fa fa-cc-discover" style="color:orange;"></i>
+                </div>
+              </div>
+              <div class="input-group">
+                <label for="cname">Name on Card</label>
+                <input type="text" id="cname" name="cardname" placeholder="John More Doe">
+              </div>
+              <div class="input-group">
+                <label for="ccnum">Credit card number</label>
+                <input type="text" id="ccnum" name="cardnumber" placeholder="1111-2222-3333-4444">
+              </div>
+              <div class="input-group">
+                <label for="expmonth">Exp Month</label>
+                <input type="text" id="expmonth" name="expmonth" placeholder="September">
+              </div>
+              <div class="row">
+                <div class="col-50">
+                  <div class="input-group">
+                    <label for="expyear">Exp Year</label>
+                    <input type="text" id="expyear" name="expyear" placeholder="2018">
+                  </div>
+                </div>
+                <div class="col-50">
+                  <div class="input-group">
+                    <label for="cvv">CVV</label>
+                    <input type="text" id="cvv" name="cvv" placeholder="352">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <label>
+            <input type="checkbox" checked="checked" name="sameadr"> Shipping address same as billing
+          </label>
+          <input type="submit" value="Continue to checkout" class="btn">
+        </form>
+      </div>
+    </div>
+    <div class="col-25">
+        <div class="container">
+          <hr>
+          <h3>Total</h3>
+          <p class="price" style="color:black"><b>$300</b></p>
+        </div>
+      </div>
+  </div>
+                
+
+
+        <button type="submit" id="registerBtn">Submit request</button>
+    </form>
+
+    <script src="RequestToVendor.js"></script>
+</body>
+</html>
