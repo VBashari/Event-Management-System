@@ -1,7 +1,14 @@
 <?php
 
-function exitError($code, $message) {
-    http_response_code($code);
-    echo json_encode(array("error" => $message));
-    exit();
+
+function readRequestBody() {
+    $body = file_get_contents('php://input');
+
+    if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/json') {
+        return json_decode($body, true);
+    }
+    else {
+        parse_str($body, $data);
+        return $data;
+    }
 }
