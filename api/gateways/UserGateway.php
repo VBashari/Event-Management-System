@@ -1,14 +1,56 @@
 <?php
     class UserGateway {
-        public function __construct(private $database) {
+        public function __construct($database) {
             $this->db = $database->getConnection();
         }
 
-        public function getAll() {
-            $stmt = $this->db->prepare("SELECT user_id, user_type, username, email 
-                                        FROM user");
+        public function getAll($search = null, $user_type = null, $limit = null, $page = null) {
+            $query = "SELECT user_id, user_type, username, email FROM user";
+        
+            if ($search !== null) {
+                $query .= " WHERE username LIKE :search";
+            }
+
+            if ($user_type !== null) {
+                if ($search === null) {
+                    $query .= " WHERE";
+                }
+                else {
+                    $query .= " AND";
+                }
+                $query .= " user_type = :user_type";
+            }
+
+            if ($limit !== null) {
+                $query .= " LIMIT :limit";
+            }
+        
+            if ($limit !== null && $page !== null) {
+                $offset = ($page - 1) * $limit;
+                $query .= " OFFSET :offset";
+            }
+        
+            $stmt = $this->db->prepare($query);
+        
+            if ($search !== null) {
+                $searchTerm = "%{$search}%";
+                $stmt->bindValue(':search', $searchTerm, PDO::PARAM_STR);
+            }
+
+            if ($user_type !== null) {
+                $stmt->bindValue(':user_type', $user_type, PDO::PARAM_STR);
+            }
+
+            if ($limit !== null) {
+                $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            }
+        
+            if ($limit !== null && $page !== null) {
+                $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            }
+        
             $stmt->execute();
-            
+        
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
@@ -17,7 +59,7 @@
                                         FROM user
                                         WHERE user_id = :user_id");
             
-            $stmt->bindParam('user_id', $userId);
+            $stmt->bindParam('user_id', $userId, PDO::PARAM_INT);
             $stmt->execute();
 
             return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -28,7 +70,7 @@
                                         FROM user
                                         WHERE username = :username");
             
-            $stmt->bindParam('username', $username);
+            $stmt->bindParam('username', $username, PDO::PARAM_STR);
             $stmt->execute();
 
             return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
@@ -39,7 +81,7 @@
                                         FROM user
                                         WHERE email = :email");
             
-            $stmt->bindParam('email', $email);
+            $stmt->bindParam('email', $email, PDO::PARAM_STR);
             $stmt->execute();
 
             return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
@@ -49,10 +91,10 @@
             $stmt = $this->db->prepare("INSERT INTO user (user_type, username, email, password)
                                         VALUES (:user_type, :username, :email, :password)");
             
-            $stmt->bindParam('user_type', $user_type);
-            $stmt->bindParam('username', $username);
-            $stmt->bindParam('email', $email);
-            $stmt->bindParam('password', $password);
+            $stmt->bindParam('user_type', $user_type, PDO::PARAM_STR);
+            $stmt->bindParam('username', $username, PDO::PARAM_STR);
+            $stmt->bindParam('email', $email, PDO::PARAM_STR);
+            $stmt->bindParam('password', $password, PDO::PARAM_STR);
             $stmt->execute();
 
             return $this->db->lastInsertId();
@@ -63,8 +105,8 @@
                                         SET user_type = :user_type
                                         WHERE user_id = :user_id");
             
-            $stmt->bindParam('user_type', $user_type);
-            $stmt->bindParam('user_id', $userId);
+            $stmt->bindParam('user_type', $user_type, PDO::PARAM_STR);
+            $stmt->bindParam('user_id', $userId, PDO::PARAM_INT);
             $stmt->execute();
 
             return $stmt->rowCount() > 0;
@@ -75,8 +117,8 @@
                                         SET username = :username
                                         WHERE user_id = :user_id");
             
-            $stmt->bindParam('username', $username);
-            $stmt->bindParam('user_id', $userId);
+            $stmt->bindParam('username', $username, PDO::PARAM_STR);
+            $stmt->bindParam('user_id', $userId, PDO::PARAM_INT);
             $stmt->execute();
 
             return $stmt->rowCount() > 0;
@@ -87,8 +129,8 @@
                                         SET email = :email
                                         WHERE user_id = :user_id");
             
-            $stmt->bindParam('email', $email);
-            $stmt->bindParam('user_id', $userId);
+            $stmt->bindParam('email', $email, PDO::PARAM_STR);
+            $stmt->bindParam('user_id', $userId, PDO::PARAM_INT);
             $stmt->execute();
 
             return $stmt->rowCount() > 0;
@@ -99,8 +141,8 @@
                                         SET password = :password
                                         WHERE user_id = :user_id");
             
-            $stmt->bindParam('password', $password);
-            $stmt->bindParam('user_id', $userId);
+            $stmt->bindParam('password', $password, PDO::PARAM_STR);
+            $stmt->bindParam('user_id', $userId, PDO::PARAM_INT);
             $stmt->execute();
 
             return $stmt->rowCount() > 0;
@@ -110,7 +152,7 @@
             $stmt = $this->db->prepare("DELETE FROM user
                                         WHERE user_id = :user_id");
             
-            $stmt->bindParam('user_id', $userId);
+            $stmt->bindParam('user_id', $userId, PDO::PARAM_INT);
             $stmt->execute();
 
             return $stmt->rowCount() > 0;
