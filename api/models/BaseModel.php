@@ -130,15 +130,12 @@ class BaseModel {
         $query = rtrim($query, ', ');
         $queryValues = rtrim($queryValues, ', ');
         $query .= ') VALUES (' . $queryValues . ')';
-
+        
         //Query execution
         $stmt = $this->db->prepare($query);
 
-        foreach($insertValues as $field => $value)
-            $stmt->bindParam($field, $value);
-
         try {
-            $stmt->execute();
+            $stmt->execute($insertValues);
         } catch(PDOException $ex) {
             throw $ex;
         }
@@ -155,13 +152,15 @@ class BaseModel {
      * @param string $servicerField: name of the servicer field in this table
      * @return boolean
      */
-    protected function insertUserCheck(array $parameters, $servicerField) {
+    public function insertUserCheck(array $parameters, $servicerField) {
         if(!$parameters)
             throw new InvalidArgumentException("Insert parameters cannot be empty");
         
         $servicerType = $this->checkUserType($parameters[$servicerField]);
 
-        if($servicerType != UserType::VENDOR || $servicerType != UserType::EVENT_ORGANIZER)
+        if($servicerType === false)
+            throw new InvalidArgumentException('User does not exist');
+        if($servicerType != UserType::VENDOR->value && $servicerType != UserType::EVENT_ORGANIZER->value)
             throw new InvalidArgumentException('Servicer user has to be of servicer type');
 
         try {
@@ -183,26 +182,26 @@ class BaseModel {
      * @param array $conditions: key-value input of columns and values specifying record(s) to be updated
      * @return boolean
      */
-    protected function update(array $parameters, array $conditions) {
+    public function update(array $parameters, array $conditions) {
         if(!$parameters || !$conditions)
             throw new InvalidArgumentException("Update parameters & conditions cannot be empty");
 
         //Query generation
-        $query = "UPDATE $this->tableName SET " . generateQueryMappings($parameters, ',') . ' WHERE ' . generateQueryMappings($conditions, 'AND');
-
+        $query = "UPDATE $this->tableName SET " . $this->generateQueryMappings($parameters, ',') . ' WHERE ' . $this->generateQueryMappings($conditions, 'AND');
+        
         //Query execution
         $stmt = $this->db->prepare($query);
 
         foreach($parameters as $field => $value)
             if(in_array($field, $this->properties))
-                $stmt->bindParam($field, $value);
+                $values[$field] = $value;
         
         foreach($conditions as $field => $value)
             if(in_array($field, $this->properties))
-                $stmt->bindParam($field, $value);
+                $values[$field] = $value;
         
         try {
-            $stmt->execute();
+            $stmt->execute($values);
         } catch(PDOException $ex) {
             throw $ex;
         }
@@ -217,19 +216,20 @@ class BaseModel {
      * @param array $conditions: key-value pairs input of columns and values specifying record to be deleted
      * @return boolean 
      */
-    protected function delete(array $conditions) {
+    public function delete(array $conditions) {
         if(!$conditions)
             throw new InvalidArgumentException("Delete conditions cannot be empty");
         
         //Query generation
-        $query = "DELETE FROM $this->tableName WHERE " . generateQueryMappings($conditions, 'AND');
+        $query = "DELETE FROM $this->tableName WHERE " . $this->generateQueryMappings($conditions, 'AND');
 
         //Query execution
         $stmt = $this->db->prepare($query);
 
         foreach($conditions as $field => $value)
-            if(in_array($field, $conditions))
+            if(in_array($field, $this->properties))
                 $stmt->bindParam($field, $value);
+        
         
         try {
             $stmt->execute();
@@ -260,7 +260,7 @@ class BaseModel {
         }
 
         $userType = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $userType['user_type'];
+        return $userType ? $userType['user_type'] : false;
     }
 
     /**

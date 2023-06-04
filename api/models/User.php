@@ -4,14 +4,10 @@ require_once __DIR__ . '/BaseModel.php';
 require_once __DIR__ . '/../utils/UserType.php';
 
 class User {
-    private static $baseModel = null;
+    public static $baseModel = null;
 
     public static function __constructStatic() {
         self::$baseModel = new BaseModel('user');
-    }
-
-    public static function getBase() {
-        return self::$baseModel;
     }
 
     /**

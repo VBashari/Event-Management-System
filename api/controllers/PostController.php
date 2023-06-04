@@ -23,7 +23,7 @@ class PostController implements IController {
     private function __construct() {}
 
     public static function __constructStatic() {
-        self::$photoController = new PhotoController('post', 'post_photo');
+        self::$photoController = new PhotoController('post', 'post_photo', '/../../../photos/posts');
     }
 
     public static function get() {
@@ -84,32 +84,36 @@ class PostController implements IController {
      * @return boolean
      */
     public static function create() {
-        $photos = $_FILES['photos'];
-        self::validateTitle($_POST['title']);
-        self::$photoController->validatePhotos($_FILES['photos']['name'], $_POST['alt_texts'], $_POST['captions']);
+        self::$errors = [];
+
+        if(!isset($_POST['servicer_id']))
+            self::$errors['servicer_id'] = 'Required value';
+            
+        self::validateTitle($_POST['title'] ?? null);
+        self::$photoController->validatePhotos($_FILES['photos']['name'] ?? null, $_POST['alt_texts'] ?? null, $_POST['captions'] ?? null);
 
         if(self::$photoController->errors)
             self::$errors = array_merge(self::$errors, self::$photoController->errors);
 
         if(self::$errors)
-            return false;
+           exitError(400, self::$errors);
 
         try {
-            if(Post::insert(['servicer_id' => $_POST['servicer_id'], 'title' => $_POST['title']])) {
+            if(Post::$baseModel->insertUserCheck(['servicer_id' => $_POST['servicer_id'], 'title' => $_POST['title']], 'servicer_id')) {
                 $postID = Post::$baseModel->db->lastInsertID();
+                $photos = $_FILES['photos'];
 
                 for($i = 0; $i < count($photos['name']); $i++)
                     self::$photoController->uploadPhoto([
                         'post_id' => $postID, 
                         'photo_reference' => $photos['full_path'][$i], 
-                        'alt_text' => $_REQUEST['alt_text'][$i],
-                        'caption' => $_REQUEST['caption'][$i]
+                        'alt_text' => $_POST['alt_texts'][$i] ?? null,
+                        'caption' => $_POST['captions'][$i] ?? null
                     ], $photos['tmp_name'][$i]);
                 
                 http_response_code(201);
-            }
-
-            exitError(400, 'The post couldn\'t be uploaded');
+            }else
+                exitError(400, 'The post couldn\'t be uploaded');
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
         }
@@ -122,21 +126,24 @@ class PostController implements IController {
      * @return boolean
      */
     public static function update() {
-        if($_REQUEST['title']) {
-            $update['title'] = $_REQUEST['title'];
+        self::$errors = [];
+        //TODO fix for getting images
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if(isset($data['title'])) {
+            $update['title'] = $data['title'];
             self::validateTitle($update['title']);
         }
 
-        if($_FILES['photos']) {
+        if(isset($_FILES['photos'])) {
             self::$photoController->validatePhotos($_FILES['photos']['name'], $_POST['alt_texts'], $_POST['captions']);
 
             if(self::$photoController->errors)
                 self::$errors = array_merge(self::$errors, self::$photoController->errors);
-        } else
-            self::$errors['photos'] = 'Photos are required for posts';
+        }
 
         if(self::$errors)
-            return false;
+            exitError(400, self::$errors);
 
         $postID = (int) getURIparam(2);
 
@@ -148,7 +155,9 @@ class PostController implements IController {
             }
         }
 
-        self::$photoController->updatePhotos($postID);
+        if(isset($_FILES['photos']))
+            self::$photoController->updatePhotos($postID);
+        
         http_response_code(200);
     }
 
@@ -169,7 +178,9 @@ class PostController implements IController {
      * @param string $title
      */
     private static function validateTitle($title) {
-        if(!$title || strlen($title) < 3 || strlen($title) > 120)
+        if(!$title)
+            self::$errors['title'] = 'Required value';
+        elseif(strlen($title) < 3 || strlen($title) > 120)
             self::$errors['title'] = 'Invalid title (Accepted values: 3-120 characters)';
     }
 }

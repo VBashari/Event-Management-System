@@ -51,6 +51,14 @@ class Service {
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public static function insert(array $parameters) {
+        try {
+            return self::$baseModel->insertUserCheck($parameters, 'servicer_id');
+        } catch(\Exception $ex) {
+            throw $ex;
+        }
+    }
 }
 
 Service::__constructStatic();

@@ -10,25 +10,6 @@ class Request {
         self::$baseModel = new BaseModel('request');
     }
 
-    public static function insert(array $parameters) {
-        if(!$parameters)
-            throw new InvalidArgumentException("Insert parameters cannot be empty");
-
-        if(self::$baseModel->checkUserType($parameters['servicer_id']) == UserType::USER->value)
-            throw new InvalidArgumentException('User types cannot take requests');
-
-        if(is_null($parameters['description']))
-            unset($parameters['description']);
-
-        try {
-            return self::$baseModel->insert($parameters);
-        } catch(InvalidArgumentException $ex) {
-            throw $ex;
-        } catch(PDOException $ex) {
-            throw $ex;
-        }
-    }
-
     public static function delete($requestID) {
         try {
             self::$baseModel->delete(['request_id' => $requestID]);

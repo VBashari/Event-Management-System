@@ -74,32 +74,45 @@ class RequestController implements IController {
      * Validate input data and, if no errors occur, perform insertion
      */
     public static function create() {
-        self::validateTitle($_POST['title']);
-        self::validateDescription($_POST['description']);
-        self::validateStatus($_POST['status'] ?? null);
-        $errorDate = validateDate($_POST['scheduled_date']);
+        self::$errors = [];
 
+        if(!isset($_POST['requester_id']))
+            self::$errors['requester_id'] = 'Required value';
+        
+        if(!isset($_POST['servicer_id']))
+            self::$errors['servicer_id'] = 'Required value';
+
+        self::validateTitle($_POST['title'] ?? null);
+        self::validateDescription($_POST['description'] ?? null);
+        self::validateStatus($_POST['status'] ?? null);
+        $errorDate = validateDate($_POST['scheduled_date'] ?? null);
+        
         if($errorDate)
             self::$errors['scheduled_date'] = $errorDate;
         
         if(self::$errors)
-            return false;
+            exitError(400, self::$errors);
 
         try {
             $input = [
                 'requester_id' => $_POST['requester_id'],
                 'servicer_id' => $_POST['servicer_id'],
                 'title' => $_POST['title'],
-                'description' => $_POST['description'],
                 'scheduled_date' => $_POST['scheduled_date']
             ];
 
-            if($_POST['status'])
+            if(isset($_POST['description']))
+                $input['description'] = $_POST['description'];
+
+            if(isset($_POST['status']))
                 $input['status'] = $_POST['status'];
 
-            Request::insert($input);
+            Request::$baseModel->insertUserCheck($input, 'servicer_id');
             http_response_code(201);
         } catch(\Exception $ex) {
+            if($ex->getCode() == 23000)
+                exitError(400, 'You already have a request to a servicer with this date & time');
+
             exitError(400, $ex->getMessage());
         }
     }
@@ -108,28 +121,31 @@ class RequestController implements IController {
      * Validate update data and, if no errors occur, perform update
      */
     public static function update() {
+        self::$errors = [];
+        $data = json_decode(file_get_contents('php://input'), true);
+
         //Data validation
-        if($_REQUEST['title']) {
-            self::validateTitle($_REQUEST['title']);
-            $update['title'] = $_REQUEST['title'];
+        if(isset($data['title'])) {
+            self::validateTitle($data['title']);
+            $update['title'] = $data['title'];
         }
 
-        if($_REQUEST['description']) {
-            self::validateDescription($_REQUEST['description']);
-            $update['description'] = $_REQUEST['description'];
+        if(isset($data['description'])) {
+            self::validateDescription($data['description']);
+            $update['description'] = $data['description'];
         }
 
-        if($_REQUEST['scheduled_date']) {
-            $error = validateDate($_REQUEST['scheduled_date']);
-            $update['scheduled_date'] = $_REQUEST['scheduled_date'];
+        if(isset($data['scheduled_date'])) {
+            $errorDate = validateDate($data['scheduled_date']);
+            $update['scheduled_date'] = $data['scheduled_date'];
 
             if($errorDate)
                 self::$errors['scheduled_date'] = $errorDate;
         }
 
-        if($_REQUEST['status']) {
-            self::validateStatus($_REQUEST['status']);
-            $update['status'] = $_REQUEST['status'];
+        if(isset($data['status'])) {
+            self::validateStatus($data['status']);
+            $update['status'] = $data['status'];
         }
 
         if(self::$errors)
@@ -137,9 +153,15 @@ class RequestController implements IController {
 
         //Perform update
         try {
-            Request::$baseModel->update($update ?? null, ['request_id' => (int) getURIparam(2)]);
-            http_response_code(200);
+            if(isset($update)) {
+                Request::$baseModel->update($update, ['request_id' => (int) getURIparam(2)]);
+                http_response_code(200);
+            } else
+                exitError(400, 'Update parameters cannot be empty');
         } catch(\Exception $ex) {
+            if($ex->getCode() == 23000)
+                exitError(400, 'You already have a request to a servicer with this date & time');
+
             exitError(400, $ex->getMessage());
         }
     }
@@ -156,7 +178,9 @@ class RequestController implements IController {
     //Auxiliary functions
 
     private static function validateTitle($title) {
-        if(!$title || strlen($title) < 3 || strlen($title) > 120)
+        if(!$title)
+            self::$errors['title'] = 'Required value';
+        elseif(strlen($title) < 3 || strlen($title) > 120)
             self::$errors['title'] = 'Invalid title (Accepted values: 3-120 characters)';
     }
 
@@ -166,7 +190,7 @@ class RequestController implements IController {
     }
 
     private static function validateStatus($status) {
-        if($status && !in_array($newStatus, [-1, 0, 1]))
+        if($status && !in_array($status, [-1, 0, 1]))
             self::$errors['status'] = 'Invalid status (acceptable values: -1 (rejected), 0 (unevaluated), 1 (accepted)';
     }
 }
