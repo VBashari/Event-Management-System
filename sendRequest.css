@@ -1,0 +1,304 @@
+.rectangle {
+    position: absolute;
+    width: 1500px;
+    height: 156px;
+    left: 0px;
+    top: 0px;
+    background: #4ECDC4;
+    border-radius: 0;
+  }
+  
+  .image-left {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+  }
+  
+  .search-bar {
+    margin: 50px 0 0 50px;
+    text-align: center;
+  }
+  
+  .search-bar input[type="text"] {
+    width: 300px;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+  }
+  
+  .search-bar button[type="submit"] {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    background-color: #333;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  .profile {
+    position: absolute;
+    bottom: 65px;
+    left: 1300px;
+  }
+  
+  .profile a {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
+  }
+  
+  .vertical-bar {
+    position: absolute;
+    top: 156px;
+    left: 0;
+    width: 200px;
+    height: calc(100% - 156px);
+    background-color: #f1f1f1;
+    padding: 10px;
+  }
+  
+  .vertical-button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+  }
+  
+  .services-dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .services-dropdown .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    margin: 0;
+    border: none;
+    border-radius: 5px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+  
+  .services-dropdown:hover .dropdown-menu {
+    display: block;
+  }
+  
+  .services-dropdown .dropdown-menu a {
+    display: block;
+    padding: 10px;
+    margin-bottom: 5px;
+    color: #fff;
+    text-decoration: none;
+  }
+  
+  .services-dropdown .dropdown-menu a:hover {
+    background-color: #555;
+  }
+  
+  .rectangle-black {
+    width: 20px;
+    height: 10px;
+    background-color: #000;
+    margin-top: 5px;
+    float: right;
+  }
+  
+  .text {
+    float: right;
+    color: #000;
+    margin-right: 30px;
+    font-size: 16px;
+    margin-top: 5px;
+  }
+  .rectangle-black {
+    position: absolute;
+    width: 750px;
+    height: 450px;
+    left: 260px;
+    top: 205px;
+  
+    border: 5px solid black; /* Add black border */
+    background: white;
+  }
+  .small-rectangle {
+    position: relative;
+    width: 300px;
+    height: 30px;
+    top:60px;
+    left: -190px;
+    background: white;
+    margin: 0 auto;
+    border: 3px solid #4ECDC4;
+    border-radius: 3px
+  }
+  
+  .title {
+    position: absolute;
+    top: -30px;
+    left: 30px;
+    transform: translateX(-50%);
+    font-size: 18px;
+    font-weight: bold;
+  }
+  .textbox {
+    width: 100%;
+    height: 100%;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    box-sizing: border-box;
+  }
+  .descrip-rectangle{
+    position: relative;
+    width: 300px;
+    height: 130px;
+    top:90px;
+    left: -190px;
+    background: white;
+    margin: 0 auto;
+    border: 3px solid #4ECDC4;
+    border-radius: 3px
+  }
+  .Description{
+    position: absolute;
+    top: -30px;
+    left: 55px;
+    transform: translateX(-50%);
+    font-size: 18px;
+    font-weight: bold;
+  }
+  .date-rectangle{
+    position: relative;
+    width: 300px;
+    height: 40px;
+    top:90px;
+    left: -190px;
+    background: white;
+    margin: 0 auto;
+    border: 3px solid #4ECDC4;
+    border-radius: 3px 
+  }
+   .texxtbox {
+    width: 100%;
+    height: 100%;
+    border: none;
+    font-size: 16px;
+    border-radius: 5px;
+    box-sizing: border-box;
+  }
+  .date-button {
+    width: 120px;
+    height: 20px;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 0;
+  }
+  .datee{
+    position: absolute;
+    top: -30px;
+    left: 25px;
+    transform: translateX(-50%);
+    font-size: 18px;
+    font-weight: bold;
+}
+  
+  .submit{
+    position: absolute;
+    top: 380px;
+    left: 510px;
+    width: 150px;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #4ECDC4;
+    color: black;
+    border: none;
+    border-radius: 5px;
+  }
+ .SendRequest{
+    position: absolute;
+    top: 15px;
+    left: 95px;
+    transform: translateX(-50%);
+    font-size: 18px;
+    font-weight: bold; 
+ }
+ .RequestFor{
+    position: absolute;
+    top: 35px;
+    left: 115px;
+    transform: translateX(-50%);
+    font-size: 13px;
+   
+ }
+ .log-in {
+    font-family: cursive;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 24px;
+    letter-spacing: 0em;
+    text-align: center;
+    height: 40.6px;
+    width: 105.34px;
+    left:1200px;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    border-radius: 20px;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    background: #292F36;
+    border: 1px solid #292F36;
+  }
+  .sign-up {
+    font-family: cursive;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 24px;
+    letter-spacing: 0em;
+    text-align: center;
+    height: 40.6px;
+    width: 105.34px;
+    left: 900px;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    border-radius: 20px;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    background: #292F36;
+    border: 1px solid #292F36;
+  }
+  
+  
+ 
