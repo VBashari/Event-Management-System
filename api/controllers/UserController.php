@@ -57,6 +57,7 @@ class UserController implements GenericController {
 
         self::validateUserType($_POST['user_type'] ?? null);
         self::validateUsername($_POST['username'] ?? null);
+        self::validateFullName($_POST['full_name'] ?? null);
         self::validateEmail($_POST['email'] ?? null);
         self::validatePassword($_POST['password'] ?? null);
         self::validateConfirmPassword($_POST['password'] ?? null, $_POST['confirm_password'] ?? null);
@@ -151,6 +152,13 @@ class UserController implements GenericController {
             self::$errors['username'] = 'Invalid username (Accepted values: 3-40 characters; a-z, A-Z, 0-9, special characters)';
         elseif(User::doesUsernameExist($username))
             self::$errors['username'] = 'Username is taken';
+    }
+
+    private static function validateFullName($fullName) {
+        if(!$fullName)
+            self::$errors['full_name'] = 'Required value';
+        elseif(strlen($fullName) < 3 || strlen($fullName) > 80)
+            self::$errors['full_name'] = 'Invalid name (3-40 characters long)';
     }
 
     /**
