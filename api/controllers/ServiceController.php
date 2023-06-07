@@ -12,6 +12,8 @@ require_once __DIR__ . '/../utils/utils.php';
  * Endpoints:
  *      GET POST        services
  *      GET POST        services?limit={}&offset={}
+ *      GET             services?q={}
+ *      GET             services?q={}&limit={}&offset={}
  *      GET PATCH DEL   services/{id}
  *      GET             services/user/{id}
  *      GET             services/user/{id}?limit={}&offset={}
@@ -60,7 +62,30 @@ class ServiceController implements IController {
         try {
             $services = Service::getAllBy((int) getURIparam(3), $limitQueries['limit'] ?? null, $limitQueries['offset'] ?? null);
 
-            //Getting photos for each post
+            //Getting photos & tags for each post
+            for($i = 0; $i < count($services); $i++) {
+                $photos = self::$photoController->baseModel->getAllBy($services[$i]['service_id']);
+                $tags = Tag::getAllBy($services[$i]['service_id']);
+
+                if($photos)
+                    $services[$i]['photos'] = $photos;
+                
+                if($tags)
+                    $services[$i]['tags'] = $tags;
+            }
+            
+            http_response_code(200);
+            return $services;
+        } catch(\Exception $ex) {
+            exitError(400, $ex->getMessage());
+        }
+    }
+
+    public static function getSearch($parameters) {
+        try {
+            $services = Service::getSearch($parameters['q'], $parameters['limit'] ?? null, $parameters['offset'] ?? null);
+            
+            //Getting photos & tags for each post
             for($i = 0; $i < count($services); $i++) {
                 $photos = self::$photoController->baseModel->getAllBy($services[$i]['service_id']);
                 $tags = Tag::getAllBy($services[$i]['service_id']);

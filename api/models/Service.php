@@ -23,6 +23,28 @@ class Service {
         }
     }
 
+    public static function getSearch($searchQuery, $limit = null, $offset = null) {
+        $query = 'SELECT DISTINCT ' . self::$baseModel->tableName . '.* FROM ' . self::$baseModel->tableName
+                . ' INNER JOIN service_tag ON service_tag.service_id = ' . self::$baseModel->tableName . '.service_id'
+                . ' WHERE service_tag.tag LIKE ?';
+        $bindings = ["%$searchQuery%"];
+
+        if(isset($limit) && isset($offset)) {
+            $query .= ' LIMIT ? OFFSET ?';
+            array_push($bindings, $limit, $offset);
+        }
+
+        $stmt = self::$baseModel->db->prepare($query);
+
+        try {
+            $stmt->execute($bindings);
+        } catch(PDOException $ex) {
+            throw $ex;
+        }
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     /**
      * Get all posts by specified servicer (optional pagination)
      * 
