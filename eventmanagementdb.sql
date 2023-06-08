@@ -3,16 +3,15 @@ CREATE TABLE user (
   user_id int UNSIGNED NOT NULL AUTO_INCREMENT,
   user_type char(4) NOT NULL,
   username varchar(40) NOT NULL UNIQUE,
-  full_name varchar(80) NOT NULL,
   email varchar(50) NOT NULL,
-  password varchar(255) NOT NULL,
+  password varchar(20) NOT NULL,
   PRIMARY KEY (user_id),
   CHECK (user_type IN ('USER', 'VNDR', 'ORG', 'ADMN')),
   UNIQUE (username) 
 );
 
 -- Dumping data for table `user`
-INSERT INTO user (user_type, username, full_name, email, password) VALUES ('USER','user1','name surname','user1@gmail.com','password123'),('USER','user2','first_name surname','user2@gmail.com','password123'),('VNDR','vendor1','name last_name','vendr1@gmail.com','passi1234'),('VNDR','vendor2','name surname','vendr2@gmail.com','passi1234'),('ORG','event org1','name surname','evorg1@gmail.com','passi234'),('ORG','event_org2','name surname','evorg2@yahoo.com','password123');
+INSERT INTO user VALUES (1,'USER','user1','user1@gmail.com','password123'),(4,'USER','user2','user2@gmail.com','password123'),(5,'VNDR','vendor1','vendr1@gmail.com','passi1234'),(6,'VNDR','vendor2','vendr2@gmail.com','passi1234'),(8,'ORG','event org1','evorg1@gmail.com','passi234'),(9,'ORG','event_org2','evorg2@yahoo.com','password123');
 
 
 -- Table structure for table `request`

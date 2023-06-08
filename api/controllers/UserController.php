@@ -18,8 +18,13 @@ require_once __DIR__ . '/../utils/utils.php';
 
 class UserController implements GenericController {
     private static $errors;
+    private static $data;
 
     private function __construct() {}
+
+    public static function __constructStatic() {
+        self::$data = readRequestBody();
+    }
 
     public static function getAll($limitQueries = null) {
         try {
@@ -42,8 +47,12 @@ class UserController implements GenericController {
 
     public static function get() {
         try {
-            http_response_code(200);
-            return User::get((int) getURIparam(2));
+            $user_id = (int) getURIparam(2);
+            $user = User::get($user_id);
+            if ($user === false) {
+                exitError(404, "User with id $user_id does not exist");
+            }
+            return $user;
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
         }
@@ -55,25 +64,32 @@ class UserController implements GenericController {
     public static function create() {
         self::$errors = [];
 
-        self::validateUserType($_POST['user_type'] ?? null);
-        self::validateUsername($_POST['username'] ?? null);
-        self::validateFullName($_POST['full_name'] ?? null);
-        self::validateEmail($_POST['email'] ?? null);
-        self::validatePassword($_POST['password'] ?? null);
-        self::validateConfirmPassword($_POST['password'] ?? null, $_POST['confirm_password'] ?? null);
+        //echo "create " . self::$data['user_type'];
         
+        self::validateUserType(self::$data['user_type'] ?? null);
+        self::validateUsername(self::$data['username'] ?? null);
+        self::validateFullName(self::$data['full_name'] ?? null);
+        self::validateEmail(self::$data['email'] ?? null);
+        self::validatePassword(self::$data['password'] ?? null);
+   
         if(self::$errors)
             exitError(400, self::$errors);
         
         try {
-            User::$baseModel->insert([
-                'user_type' => $_POST['user_type'],
-                'username' => $_POST['username'],
-                'email' => $_POST['email'],
-                'password' => $_POST['password'],
-                'confirm_password' => $_POST['confirm_password']
+            $id = User::$baseModel->insert([
+                'user_type' => self::$data['user_type'],
+                'username' => self::$data['username'],
+                'email' => self::$data['email'],
+                'password' => self::$data['password']
             ]);
             http_response_code(201);
+            
+            return [
+                "error" => 0,
+                "result" => [
+                    "id" => $id
+                ]
+            ];
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
         }
@@ -84,24 +100,31 @@ class UserController implements GenericController {
      */
     public static function update() {
         self::$errors = [];
-        $data = json_decode(file_get_contents('php://input'), true);
 
-        if(isset($data['username'])) {
-            $update['username'] = $data['username'];
+        $user_id = (int) getURIparam(2);
+        $user = User::get($user_id);
+        if ($user === false) {
+            exitError(404, "User with id $user_id does not exist");
+        }
+
+        if(isset(self::$data['username'])) {
+            $update['username'] = self::$data['username'];
             self::validateUsername($update['username']);
         }
 
-        if(isset($data['email'])) {
-            $update['email'] = $data['email'];
+        if(isset(self::$data['email'])) {
+            $update['email'] = self::$data['email'];
             self::validateEmail($update['email']);
         }
 
-        if(isset($data['password'])) {
-            $update['password'] = $data['password'];
-            $update['confirm_password'] = $data['confirm_password'] ?? null;
-
+        if(isset(self::$data['password'])) {
+            $update['password'] = self::$data['password'];
             self::validatePassword($update['password']);
-            self::validateConfirmPassword($update['password'], $update['confirm_password']);
+        }
+
+        if(isset(self::$data['full_name'])) {
+            $update['full_name'] = self::$data['full_name'];
+            self::validateFullName($update['full_name']);
         }
 
         if(self::$errors)
@@ -109,8 +132,12 @@ class UserController implements GenericController {
         
         if(isset($update)) {
             try {
-                User::$baseModel->update($update, ['user_id' => (int) getURIparam(2)]);
-                http_response_code(200);
+                User::$baseModel->update($update, ['user_id' => $user_id]);
+                $user = User::get($user_id);
+                return [
+                    "error" => 0,
+                    "result" => $user
+                ];
             } catch(\Exception $ex) {
                 exitError(400, $ex->getMessage());
             }
@@ -119,6 +146,12 @@ class UserController implements GenericController {
 
     public static function delete() {
         try {
+            $user_id = (int) getURIparam(2);
+            $user = User::get($user_id);
+            if ($user === false) {
+                exitError(404, "User with id $user_id does not exist");
+            }
+            
             User::$baseModel->delete(['user_id' => (int) getURIparam(2)]);
             http_response_code(204);
         } catch(\Exception $ex) {
@@ -171,6 +204,8 @@ class UserController implements GenericController {
             self::$errors['email'] = 'Required value';
         elseif(!filter_var($email, FILTER_VALIDATE_EMAIL))
             self::$errors['email'] = 'Invalid email (Accepted format: example@example.com)';
+        elseif(User::doesEmailExist($email))
+            self::$errors['email'] = 'Email is taken';
     }
 
     /**
@@ -186,17 +221,6 @@ class UserController implements GenericController {
             self::$errors['password'] = 'Invalid password (Accepted values: 8 or more characters,'
                                         . ' at least one lowercase/uppercase letter, and a number)';
     }
-
-    /**
-     * Check if confirm-password is inputted and matches with password: if not, adds an error to the class errors
-     * 
-     * @param string $password
-     * @param string $confirmPassword
-     */
-    private static function validateConfirmPassword($password, $confirmPassword) {
-        if(!$confirmPassword)
-            self::$errors['confirm_password'] = 'Required value';
-        elseif(strcmp($password, $confirmPassword) != 0)
-            self::$errors['confirm_password'] = 'Password & confirm-password do not match';
-    }
 }
+
+UserController::__constructStatic();

@@ -115,6 +115,24 @@ class User {
         return $stmt->rowCount() == 0 ? false : true;
     }
 
+    /**
+     * Checks if the given email exists in the database
+     * 
+     * @param string $email: email
+     * @return boolean
+     */
+    public static function doesEmailExist($email): bool {
+        $stmt = self::$baseModel->db->prepare('SELECT username FROM ' . self::$baseModel->tableName . ' WHERE email = ?');
+
+        try {
+            $stmt->execute(array($email));
+        } catch(PDOException $ex) {
+            throw $ex;
+        }
+
+        return $stmt->rowCount() == 0 ? false : true;
+    }
+
     //?? TODO needs hashing
     public static function changePassword($userId, $oldPassword, $newPassword) {}
 }

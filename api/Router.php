@@ -111,6 +111,9 @@ class Router {
     }
 }
 
+// it would be better to use $_GET instead of regex, as query parameters should be able to be passed in any order
+// but this is low priority and there's not much time
+
 Router::addBaseController('ServiceController', 'services');
 Router::addBaseController('RequestController', 'requests');
 Router::addBaseController('PostController', 'posts');
