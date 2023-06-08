@@ -48,6 +48,11 @@ switch ($resource) {
             respondError(500, "Database error");
         }
         break;
+    case "session":
+        require_once __DIR__ . "/controllers/SessionController.php";
+
+        $controller = new SessionController();
+        $controller->processRequest($method, $id);
     default:
         respondError(404, "Resource not found");
 }
