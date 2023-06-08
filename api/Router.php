@@ -111,6 +111,12 @@ class Router {
     }
 }
 
+<<<<<<< HEAD
+=======
+// it would be better to use $_GET instead of regex, as query parameters should be able to be passed in any order
+// but this is low priority and there's not much time
+
+>>>>>>> api_rewrite
 Router::addBaseController('ServiceController', 'services');
 Router::addBaseController('RequestController', 'requests');
 Router::addBaseController('PostController', 'posts');
@@ -119,4 +125,10 @@ Router::addGenericController('UserController', 'users');
 
 Router::addGET('/^\/api\/requests\/user\/\d+\/incoming(\?limit=\d+?&offset=\d+)?$/', 'RequestController', 'getAllUndeclinedFor');
 Router::addGET('/^\/api\/events\/user\/\d+\?month=\d+&year=\d+$/', 'EventController', 'getMonthlyAllBy');
+<<<<<<< HEAD
 Router::addGET('/^\/api\/users\?type=(user|servicer)(&limit=\d+?&offset=\d+)?$/', 'UserController', 'getAllByType');
+=======
+Router::addGET('/^\/api\/users\?type=(user|servicer)(&limit=\d+?&offset=\d+)?$/', 'UserController', 'getAllByType');
+
+Router::addGET('/^\/api\/services\?q=.+(&limit=\d+?&offset=\d+)?$/', 'ServiceController', 'getSearch');
+>>>>>>> api_rewrite

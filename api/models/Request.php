@@ -10,6 +10,7 @@ class Request {
         self::$baseModel = new BaseModel('request');
     }
 
+<<<<<<< HEAD
     public static function insert(array $parameters) {
         if(!$parameters)
             throw new InvalidArgumentException("Insert parameters cannot be empty");
@@ -29,6 +30,12 @@ class Request {
         }
     }
 
+    public static function delete($requestID) {
+        try {
+            self::$baseModel->delete(['request_id' => $requestID]);
+        } catch(\Exception $ex) {
+            throw $ex;
+=======
     public static function delete($requestID) {
         try {
             self::$baseModel->delete(['request_id' => $requestID]);
@@ -85,6 +92,85 @@ class Request {
         if(isset($limit) && isset($offset)) {
             $query .= ' LIMIT ? OFFSET ?';
             array_push($bindings, $limit, $offset);
+>>>>>>> api_rewrite
+        }
+    }
+
+<<<<<<< HEAD
+    /**
+     * Get specified request record
+     * 
+     * @param integer $requestId
+     * @param array
+     */
+    public static function get($requestId) {
+        try {
+            return self::$baseModel->get('request_id', $requestId);
+            return $result;
+        } catch(\Exception $ex) {
+=======
+        $stmt = self::$baseModel->db->prepare($query);
+        
+        try {
+            $stmt->execute($bindings);
+        } catch(PDOException $ex) {
+>>>>>>> api_rewrite
+            throw $ex;
+        }
+    }
+
+<<<<<<< HEAD
+    /**
+     * Get all requests (optional pagination)
+     * 
+     * @param integer $limit
+     * @param integer $offset
+     * @return array query results
+     */
+    public static function getAll($limit = null, $offset = null) {
+        try {
+            return self::$baseModel->getAll($limit, $offset);
+        } catch(\Exception $ex) {
+            throw $ex;
+        }
+    }
+
+    /**
+     * Get all requests by specified servicer (optional pagination)
+=======
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Get all accepted or unevaluated requests for servicer-type users
+>>>>>>> api_rewrite
+     * 
+     * @param integer $userID
+     * @param integer $limit
+     * @param integer $offset
+     * @return array query results
+     */
+<<<<<<< HEAD
+    public static function getAllBy($userID, $limit = null, $offset = null) {
+        $query = 'SELECT ' . self::$baseModel->tableName . '.*, user.username as servicer_username'
+                . ' FROM ' . self::$baseModel->tableName
+                . ' INNER JOIN user ON user.user_id = ' . self::$baseModel->tableName . '.servicer_id'
+                . ' WHERE requester_id = ?';
+=======
+    public static function getAllUndeclinedFor($userID, $limit = null, $offset = null) {
+        if(self::$baseModel->checkUserType($userID) == UserType::USER->value)
+            throw new InvalidArgumentException('User types cannot have incoming requests');
+
+        $query = 'SELECT ' . self::$baseModel->tableName . '.*, user.username as requester_username'
+                . ' FROM ' . self::$baseModel->tableName
+                . ' INNER JOIN user ON user.user_id = ' . self::$baseModel->tableName . '.requester_id'
+                . ' WHERE servicer_id = ? AND status != -1';
+>>>>>>> api_rewrite
+        $bindings = [$userID];
+
+        if(isset($limit) && isset($offset)) {
+            $query .= ' LIMIT ? OFFSET ?';
+            array_push($bindings, $limit, $offset);
         }
 
         $stmt = self::$baseModel->db->prepare($query);
@@ -97,6 +183,7 @@ class Request {
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+<<<<<<< HEAD
 
     /**
      * Get all accepted or unevaluated requests for servicer-type users
@@ -131,6 +218,8 @@ class Request {
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+=======
+>>>>>>> api_rewrite
 }
 
 Request::__constructStatic();

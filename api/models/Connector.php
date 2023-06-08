@@ -1,5 +1,7 @@
 <?php
 
+$config = include __DIR__ . '/../utils/config.php';
+
 class Connector extends PDO {
     private static $instance;
 
@@ -11,6 +13,7 @@ class Connector extends PDO {
     }
 
     private final function __construct() {
+<<<<<<< HEAD
         // if ($_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST'] == '127.0.0.1') {
         //     $dsn = 'mysql:host=localhost;dbname=eventmanagementdb';
         //     $user = 'root';
@@ -26,6 +29,12 @@ class Connector extends PDO {
         $user = 'root';
         $password = 'password';
         parent::__construct($dsn, $user, $password);
+=======
+        global $config;
+        
+        $dsn = 'mysql:host=' . $config['host'] . ';dbname=' . $config['name'];
+        parent::__construct($dsn, $config['user'], $config['password']);
+>>>>>>> api_rewrite
 
         array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8");
         $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
