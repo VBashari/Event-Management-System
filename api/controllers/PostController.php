@@ -19,11 +19,13 @@ require_once __DIR__ . '/../utils/utils.php';
 class PostController implements IController {
     private static $photoController;
     private static $errors;
+    private static $data;
 
     private function __construct() {}
 
     public static function __constructStatic() {
         self::$photoController = new PhotoController('post', 'post_photo', '/../../../photos/posts');
+        self::$data = readRequestBody();
     }
 
     public static function get() {
@@ -86,11 +88,11 @@ class PostController implements IController {
     public static function create() {
         self::$errors = [];
 
-        if(!isset($_POST['servicer_id']))
+        if(!isset(self::$data['servicer_id']))
             self::$errors['servicer_id'] = 'Required value';
             
-        self::validateTitle($_POST['title'] ?? null);
-        self::$photoController->validatePhotos($_FILES['photos']['name'] ?? null, $_POST['alt_texts'] ?? null, $_POST['captions'] ?? null);
+        self::validateTitle(self::$data['title'] ?? null);
+        self::$photoController->validatePhotos($_FILES['photos']['name'] ?? null, self::$data['alt_texts'] ?? null, self::$data['captions'] ?? null);
 
         if(self::$photoController->errors)
             self::$errors = array_merge(self::$errors, self::$photoController->errors);
@@ -99,7 +101,7 @@ class PostController implements IController {
            exitError(400, self::$errors);
 
         try {
-            if(Post::$baseModel->insertUserCheck(['servicer_id' => $_POST['servicer_id'], 'title' => $_POST['title']], 'servicer_id')) {
+            if(Post::$baseModel->insertUserCheck(['servicer_id' => self::$data['servicer_id'], 'title' => self::$data['title']], 'servicer_id')) {
                 $postID = Post::$baseModel->db->lastInsertID();
                 $photos = $_FILES['photos'];
 
@@ -107,8 +109,8 @@ class PostController implements IController {
                     self::$photoController->uploadPhoto([
                         'post_id' => $postID, 
                         'photo_reference' => $photos['full_path'][$i], 
-                        'alt_text' => $_POST['alt_texts'][$i] ?? null,
-                        'caption' => $_POST['captions'][$i] ?? null
+                        'alt_text' => self::$data['alt_texts'][$i] ?? null,
+                        'caption' => self::$data['captions'][$i] ?? null
                     ], $photos['tmp_name'][$i]);
                 
                 http_response_code(201);
@@ -128,15 +130,14 @@ class PostController implements IController {
     public static function update() {
         self::$errors = [];
         //TODO fix for getting images
-        $data = json_decode(file_get_contents('php://input'), true);
 
-        if(isset($data['title'])) {
-            $update['title'] = $data['title'];
+        if(isset(self::$data['title'])) {
+            $update['title'] = self::$data['title'];
             self::validateTitle($update['title']);
         }
 
         if(isset($_FILES['photos'])) {
-            self::$photoController->validatePhotos($_FILES['photos']['name'], $_POST['alt_texts'], $_POST['captions']);
+            self::$photoController->validatePhotos($_FILES['photos']['name'], self::$data['alt_texts'], self::$data['captions']);
 
             if(self::$photoController->errors)
                 self::$errors = array_merge(self::$errors, self::$photoController->errors);

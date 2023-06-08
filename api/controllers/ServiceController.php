@@ -22,11 +22,13 @@ require_once __DIR__ . '/../utils/utils.php';
 class ServiceController implements IController {
     private static $photoController;
     private static $errors;
-
+    private static $data;
+    
     private function __construct() {}
 
     public static function __constructStatic() {
         self::$photoController = new PhotoController('service', 'service_photo', '/../../../photos/services');
+        self::$data = readRequestBody();
     }
 
     /**
@@ -135,14 +137,14 @@ class ServiceController implements IController {
         self::$errors = [];
         
         //Error checking
-        if(!isset($_POST['servicer_id']))
+        if(!isset(self::$data['servicer_id']))
             self::$errors['servicer_id'] = 'Required value';
         
-        self::validateTitle($_POST['title'] ?? null);
-        self::validateDescription($_POST['description'] ?? null);
-        self::validateAvgPrice($_POST['avg_price'] ?? null);
-        self::validateTags($_POST['tags'] ?? null);
-        self::$photoController->validatePhotos($_FILES['photos']['name'] ?? null, $_POST['alt_texts'] ?? null, $_POST['captions'] ?? null);
+        self::validateTitle(self::$data['title'] ?? null);
+        self::validateDescription(self::$data['description'] ?? null);
+        self::validateAvgPrice(self::$data['avg_price'] ?? null);
+        self::validateTags(self::$data['tags'] ?? null);
+        self::$photoController->validatePhotos($_FILES['photos']['name'] ?? null, self::$data['alt_texts'] ?? null, self::$data['captions'] ?? null);
 
         if(self::$photoController->errors)
             self::$errors = array_merge(self::$errors, self::$photoController->errors);
@@ -153,13 +155,13 @@ class ServiceController implements IController {
         //Service insertion
         try {
             $input = [
-                'servicer_id' => $_POST['servicer_id'],
-                'title' => $_POST['title'],
-                'avg_price' => $_POST['avg_price']
+                'servicer_id' => self::$data['servicer_id'],
+                'title' => self::$data['title'],
+                'avg_price' => self::$data['avg_price']
             ];
 
-            if(isset($_POST['description']))
-                $input['description'] = $_POST['description'];
+            if(isset(self::$data['description']))
+                $input['description'] = self::$data['description'];
 
             if(Service::insert($input)) {
                 $serviceID = Service::$baseModel->db->lastInsertId();
@@ -175,8 +177,8 @@ class ServiceController implements IController {
                     ], $photos['tmp_name'][$i]);
 
                 //Upload tags, if there are any
-                if(isset($_POST['tags'])) {
-                    foreach($_POST['tags'] as $tag)
+                if(isset(self::$data['tags'])) {
+                    foreach(self::$data['tags'] as $tag)
                         TagController::insert($serviceID, $tag);
                 }
 
@@ -194,36 +196,35 @@ class ServiceController implements IController {
     public static function update() {
         self::$errors = [];
         //TODO fix for getting images
-        $data = json_decode(file_get_contents('php://input'), true);
 
         //Error checking
-        if(!$data)
+        if(!self::$data)
             exitError(400, 'Update cannot be empty');
 
-        if(isset($data['title'])) {
-            self::validateTitle($data['title']);
-            $update['title'] = $data['title'];
+        if(isset(self::$data['title'])) {
+            self::validateTitle(self::$data['title']);
+            $update['title'] = self::$data['title'];
         }
 
-        if(isset($data['description'])) {
-            self::validateDescription($data['description']);
-            $update['description'] = $data['description'];
+        if(isset(self::$data['description'])) {
+            self::validateDescription(self::$data['description']);
+            $update['description'] = self::$data['description'];
         }
 
-        if(isset($data['avg_price'])) {
-            self::validateAvgPrice($data['avg_price']);
-            $update['avg_price'] = $data['avg_price'];
+        if(isset(self::$data['avg_price'])) {
+            self::validateAvgPrice(self::$data['avg_price']);
+            $update['avg_price'] = self::$data['avg_price'];
         }
 
         if(isset($_FILES['photos'])) {
-            self::$photoController->validatePhotos($_FILES['photos']['name'], $data['alt_texts'], $data['captions']);
+            self::$photoController->validatePhotos($_FILES['photos']['name'], self::$data['alt_texts'], self::$data['captions']);
 
             if(self::$photoController->errors)
             self::$errors = array_merge(self::$errors, self::$photoController->errors);
         }
             
-        if(isset($data['tags']))
-            self::validateTags($data['tags']);
+        if(isset(self::$data['tags']))
+            self::validateTags(self::$data['tags']);
 
         if(self::$errors)
             exitError(400, self::$errors);
@@ -244,7 +245,7 @@ class ServiceController implements IController {
         if(isset($_FILES['photos']))
             self::$photoController->updatePhotos($serviceID);
         
-        if(isset($data['tags']))
+        if(isset(self::$data['tags']))
             TagController::updateTags($serviceID);
         
         http_response_code(200);

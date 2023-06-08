@@ -18,8 +18,13 @@ require_once __DIR__ . '/../utils/utils.php';
 
 class EventController implements IController {
     private static $errors;
-
+    private static $data;
+    
     private function __construct() {}
+
+    public static function __constructStatic() {
+        self::$data = readRequestBody();
+    }
 
     public static function getAllBy($limitQueries = null) {
         try {
@@ -61,11 +66,11 @@ class EventController implements IController {
      * Add vendor for event with specified ID in the URI 
      */
     public static function insertVendorFor() {
-        if(!isset($_POST['vendor_id']))
+        if(!isset(self::$data['vendor_id']))
             exitError(400, 'Vendor ID is required');
 
         try {
-            Event::insertVendor(['event_id' => (int) getURIparam(2), 'vendor_id' => $_POST['vendor_id']]);
+            Event::insertVendor(['event_id' => (int) getURIparam(2), 'vendor_id' => self::$data['vendor_id']]);
             http_response_code(201);
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
@@ -77,18 +82,18 @@ class EventController implements IController {
      */
     public static function create() {
         self::$errors = [];
-        self::validateTitle($_POST['title']);
+        self::validateTitle(self::$data['title']);
 
-        if(!$_POST['requester_id'])
+        if(!self::$data['requester_id'])
             self::$errors['requester_id'] = 'Invalid requester ID (required value)';
         
-        if(!$_POST['organizer_id'])
+        if(!self::$data['organizer_id'])
             self::$errors['organizer_id'] = 'Invalid organizer ID (required value)';
 
-        if(!$_POST['scheduled_date'])
+        if(!self::$data['scheduled_date'])
             self::$errors['scheduled_date'] = 'Invalid schedule date (required value)';
 
-        $errorDate = validateDate($_POST['scheduled_date']);
+        $errorDate = validateDate(self::$data['scheduled_date']);
 
         if($errorDate)
             self::$errors['scheduled_date'] = $errorDate;
@@ -98,10 +103,10 @@ class EventController implements IController {
         
         try {
             Event::insert([
-                'requester_id' => $_POST['requester_id'],
-                'organizer_id' => $_POST['organizer_id'],
-                'title' => $_POST['title'],
-                'scheduled_date' => $_POST['scheduled_date']
+                'requester_id' => self::$data['requester_id'],
+                'organizer_id' => self::$data['organizer_id'],
+                'title' => self::$data['title'],
+                'scheduled_date' => self::$data['scheduled_date']
             ]);
             http_response_code(201);
         } catch(\Exception $ex) {
@@ -173,3 +178,5 @@ class EventController implements IController {
             && is_numeric($queries['month']) && is_numeric($queries['year']);
     }
 }
+
+EventController::__constructStatic();

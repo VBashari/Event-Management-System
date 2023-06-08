@@ -18,8 +18,13 @@ require_once __DIR__ . '/../utils/utils.php';
 
 class UserController implements GenericController {
     private static $errors;
+    private static $data;
 
     private function __construct() {}
+
+    public static function __constructStatic() {
+        self::$data = readRequestBody();
+    }
 
     public static function getAll($limitQueries = null) {
         try {
@@ -55,21 +60,23 @@ class UserController implements GenericController {
     public static function create() {
         self::$errors = [];
 
-        self::validateUserType($_POST['user_type'] ?? null);
-        self::validateUsername($_POST['username'] ?? null);
-        self::validateFullName($_POST['full_name'] ?? null);
-        self::validateEmail($_POST['email'] ?? null);
-        self::validatePassword($_POST['password'] ?? null);
+        //echo "create " . self::$data['user_type'];
+        
+        self::validateUserType(self::$data['user_type'] ?? null);
+        self::validateUsername(self::$data['username'] ?? null);
+        self::validateFullName(self::$data['full_name'] ?? null);
+        self::validateEmail(self::$data['email'] ?? null);
+        self::validatePassword(self::$data['password'] ?? null);
    
         if(self::$errors)
             exitError(400, self::$errors);
         
         try {
             User::$baseModel->insert([
-                'user_type' => $_POST['user_type'],
-                'username' => $_POST['username'],
-                'email' => $_POST['email'],
-                'password' => $_POST['password']
+                'user_type' => self::$data['user_type'],
+                'username' => self::$data['username'],
+                'email' => self::$data['email'],
+                'password' => self::$data['password']
             ]);
             http_response_code(201);
         } catch(\Exception $ex) {
@@ -82,20 +89,19 @@ class UserController implements GenericController {
      */
     public static function update() {
         self::$errors = [];
-        $data = json_decode(file_get_contents('php://input'), true);
 
-        if(isset($data['username'])) {
-            $update['username'] = $data['username'];
+        if(isset(self::$data['username'])) {
+            $update['username'] = self::$data['username'];
             self::validateUsername($update['username']);
         }
 
-        if(isset($data['email'])) {
-            $update['email'] = $data['email'];
+        if(isset(self::$data['email'])) {
+            $update['email'] = self::$data['email'];
             self::validateEmail($update['email']);
         }
 
-        if(isset($data['password'])) {
-            $update['password'] = $data['password'];
+        if(isset(self::$data['password'])) {
+            $update['password'] = self::$data['password'];
 
             self::validatePassword($update['password']);
         }
@@ -167,6 +173,8 @@ class UserController implements GenericController {
             self::$errors['email'] = 'Required value';
         elseif(!filter_var($email, FILTER_VALIDATE_EMAIL))
             self::$errors['email'] = 'Invalid email (Accepted format: example@example.com)';
+        elseif(User::doesEmailExist($email))
+            self::$errors['email'] = 'Email is taken';
     }
 
     /**
@@ -183,3 +191,5 @@ class UserController implements GenericController {
                                         . ' at least one lowercase/uppercase letter, and a number)';
     }
 }
+
+UserController::__constructStatic();

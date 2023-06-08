@@ -19,9 +19,14 @@ require_once __DIR__ . '/../utils/utils.php';
 
 class RequestController implements IController {
     private static $errors;
-
+    private static $data;
+    
     private function __construct() {}
 
+    public static function __constructStatic() {
+        self::$data = readRequestBody();
+    }
+    
     /**
      * Get all requests from specified user in URI (optional pagination)
      */
@@ -76,16 +81,16 @@ class RequestController implements IController {
     public static function create() {
         self::$errors = [];
 
-        if(!isset($_POST['requester_id']))
+        if(!isset(self::$data['requester_id']))
             self::$errors['requester_id'] = 'Required value';
         
-        if(!isset($_POST['servicer_id']))
+        if(!isset(self::$data['servicer_id']))
             self::$errors['servicer_id'] = 'Required value';
 
-        self::validateTitle($_POST['title'] ?? null);
-        self::validateDescription($_POST['description'] ?? null);
-        self::validateStatus($_POST['status'] ?? null);
-        $errorDate = validateDate($_POST['scheduled_date'] ?? null);
+        self::validateTitle(self::$data['title'] ?? null);
+        self::validateDescription(self::$data['description'] ?? null);
+        self::validateStatus(self::$data['status'] ?? null);
+        $errorDate = validateDate(self::$data['scheduled_date'] ?? null);
         
         if($errorDate)
             self::$errors['scheduled_date'] = $errorDate;
@@ -95,17 +100,17 @@ class RequestController implements IController {
 
         try {
             $input = [
-                'requester_id' => $_POST['requester_id'],
-                'servicer_id' => $_POST['servicer_id'],
-                'title' => $_POST['title'],
-                'scheduled_date' => $_POST['scheduled_date']
+                'requester_id' => self::$data['requester_id'],
+                'servicer_id' => self::$data['servicer_id'],
+                'title' => self::$data['title'],
+                'scheduled_date' => self::$data['scheduled_date']
             ];
 
-            if(isset($_POST['description']))
-                $input['description'] = $_POST['description'];
+            if(isset(self::$data['description']))
+                $input['description'] = self::$data['description'];
 
-            if(isset($_POST['status']))
-                $input['status'] = $_POST['status'];
+            if(isset(self::$data['status']))
+                $input['status'] = self::$data['status'];
 
             Request::$baseModel->insertUserCheck($input, 'servicer_id');
             http_response_code(201);
@@ -122,30 +127,29 @@ class RequestController implements IController {
      */
     public static function update() {
         self::$errors = [];
-        $data = json_decode(file_get_contents('php://input'), true);
 
         //Data validation
-        if(isset($data['title'])) {
-            self::validateTitle($data['title']);
-            $update['title'] = $data['title'];
+        if(isset(self::$data['title'])) {
+            self::validateTitle(self::$data['title']);
+            $update['title'] = self::$data['title'];
         }
 
-        if(isset($data['description'])) {
-            self::validateDescription($data['description']);
-            $update['description'] = $data['description'];
+        if(isset(self::$data['description'])) {
+            self::validateDescription(self::$data['description']);
+            $update['description'] = self::$data['description'];
         }
 
-        if(isset($data['scheduled_date'])) {
-            $errorDate = validateDate($data['scheduled_date']);
-            $update['scheduled_date'] = $data['scheduled_date'];
+        if(isset(self::$data['scheduled_date'])) {
+            $errorDate = validateDate(self::$data['scheduled_date']);
+            $update['scheduled_date'] = self::$data['scheduled_date'];
 
             if($errorDate)
                 self::$errors['scheduled_date'] = $errorDate;
         }
 
-        if(isset($data['status'])) {
-            self::validateStatus($data['status']);
-            $update['status'] = $data['status'];
+        if(isset(self::$data['status'])) {
+            self::validateStatus(self::$data['status']);
+            $update['status'] = self::$data['status'];
         }
 
         if(self::$errors)
@@ -194,3 +198,5 @@ class RequestController implements IController {
             self::$errors['status'] = 'Invalid status (acceptable values: -1 (rejected), 0 (unevaluated), 1 (accepted)';
     }
 }
+
+RequestController::__constructStatic();
