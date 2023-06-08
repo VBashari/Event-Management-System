@@ -53,17 +53,20 @@ class UserController implements GenericController {
      * Validate input data and, if no errors occur, perform insertion
      */
     public static function create() {
-        self::validateUserType($_POST['user_type']);
-        self::validateUsername($_POST['username']);
-        self::validateEmail($_POST['email']);
-        self::validatePassword($_POST['password']);
-        self::validateConfirmPassword($_POST['password'], $_POST['confirm_password']);
+        self::$errors = [];
+
+        self::validateUserType($_POST['user_type'] ?? null);
+        self::validateUsername($_POST['username'] ?? null);
+        self::validateFullName($_POST['full_name'] ?? null);
+        self::validateEmail($_POST['email'] ?? null);
+        self::validatePassword($_POST['password'] ?? null);
+        self::validateConfirmPassword($_POST['password'] ?? null, $_POST['confirm_password'] ?? null);
         
         if(self::$errors)
             exitError(400, self::$errors);
         
         try {
-            User::getBase()->insert([
+            User::$baseModel->insert([
                 'user_type' => $_POST['user_type'],
                 'username' => $_POST['username'],
                 'email' => $_POST['email'],
@@ -80,38 +83,43 @@ class UserController implements GenericController {
      * Validate the specified update data and, if no errors occur, perform update
      */
     public static function update() {
-        if($_REQUEST['username']) {
-            $update['username'] = $_REQUEST['username'];
+        self::$errors = [];
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if(isset($data['username'])) {
+            $update['username'] = $data['username'];
             self::validateUsername($update['username']);
         }
 
-        if($_REQUEST['email']) {
-            $update['email'] = $_REQUEST['email'];
+        if(isset($data['email'])) {
+            $update['email'] = $data['email'];
             self::validateEmail($update['email']);
         }
 
-        if($_REQUEST['password']) {
-            $update['password'] = $_REQUEST['password'];
-            $update['confirm_password'] = $_REQUEST['confirm_password'];
+        if(isset($data['password'])) {
+            $update['password'] = $data['password'];
+            $update['confirm_password'] = $data['confirm_password'] ?? null;
 
             self::validatePassword($update['password']);
-            self::validateConfirmPassword($update['confirm_password']);
+            self::validateConfirmPassword($update['password'], $update['confirm_password']);
         }
 
         if(self::$errors)
             exitError(400, self::$errors);
         
-        try {
-            User::getBase()->update($update, ['user_id' => (int) getURIparam(2)]);
-            http_response_code(200);
-        } catch(\Exception $ex) {
-            exitError(400, $ex->getMessage());
+        if(isset($update)) {
+            try {
+                User::$baseModel->update($update, ['user_id' => (int) getURIparam(2)]);
+                http_response_code(200);
+            } catch(\Exception $ex) {
+                exitError(400, $ex->getMessage());
+            }
         }
     }
 
     public static function delete() {
         try {
-            User::getBase()->delete(['user_id' => (int) getURIparam(2)]);
+            User::$baseModel->delete(['user_id' => (int) getURIparam(2)]);
             http_response_code(204);
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
@@ -126,8 +134,10 @@ class UserController implements GenericController {
      * @param string $userType
      */
     private static function validateUserType($userType) {
-        if($input[$this->userTypeField] || in_array($input[$userType], array(UserType::USER, UserType::VENDOR, UserType::EVENT_ORGANIZER)))
-            $this->errors[$this->userTypeField] = "Invalid user type (Accepted values: 'USER', 'VNDR', 'ORG')";
+        if(!$userType)
+            self::$errors['user_type'] = 'Required value';
+        elseif(!in_array($userType, array(UserType::USER->value, UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value)))
+            self::$errors['user_type'] = "Invalid user type (Accepted values: 'USER', 'VNDR', 'ORG')";
     }
 
     /**
@@ -136,11 +146,19 @@ class UserController implements GenericController {
      * @param string $username
      */
     private static function validateUsername($username) {
-        if(!$username || strlen($username) < 3 || strlen($username) > 40)
+        if(!$username)
+            self::$errors['username'] = 'Required value';
+        elseif(strlen($username) < 3 || strlen($username) > 40)
             self::$errors['username'] = 'Invalid username (Accepted values: 3-40 characters; a-z, A-Z, 0-9, special characters)';
-        
-        if($this->user->doesUsernameExist($username))
+        elseif(User::doesUsernameExist($username))
             self::$errors['username'] = 'Username is taken';
+    }
+
+    private static function validateFullName($fullName) {
+        if(!$fullName)
+            self::$errors['full_name'] = 'Required value';
+        elseif(strlen($fullName) < 3 || strlen($fullName) > 80)
+            self::$errors['full_name'] = 'Invalid name (3-40 characters long)';
     }
 
     /**
@@ -149,7 +167,9 @@ class UserController implements GenericController {
      * @param string $email
      */
     private static function validateEmail($email) {
-        if(!$email || !filter_var($email, FILTER_VALIDATE_EMAIL))
+        if(!$email)
+            self::$errors['email'] = 'Required value';
+        elseif(!filter_var($email, FILTER_VALIDATE_EMAIL))
             self::$errors['email'] = 'Invalid email (Accepted format: example@example.com)';
     }
 
@@ -160,9 +180,11 @@ class UserController implements GenericController {
     * @param string $password
     */
     private static function validatePassword($password) {
-        if(!$password || !preg_match('^(?=.*[a-zA-Z](?=.*\d)[\w]{8,}', $password))
-            $this->errors[$this->passwordField] = 'Invalid password (Accepted values: 8 or more characters,'
-                                                . ' at least one lowercase/uppercase letter, and a number)';
+        if(!$password)
+            self::$errors['password'] = 'Required value';
+        elseif(!preg_match('/^(?=.*[a-zA-Z])(?=.*\d)[\w]{8,}$/', $password))
+            self::$errors['password'] = 'Invalid password (Accepted values: 8 or more characters,'
+                                        . ' at least one lowercase/uppercase letter, and a number)';
     }
 
     /**
@@ -173,9 +195,8 @@ class UserController implements GenericController {
      */
     private static function validateConfirmPassword($password, $confirmPassword) {
         if(!$confirmPassword)
-            $this->errors['confirm_password'] = 'Confirm-password is required';
-
-        if(strcmp($password, $confirmPassword) != 0)
-            $this->errors['confirm_password'] = 'Password & confirm-password do not match';
+            self::$errors['confirm_password'] = 'Required value';
+        elseif(strcmp($password, $confirmPassword) != 0)
+            self::$errors['confirm_password'] = 'Password & confirm-password do not match';
     }
 }

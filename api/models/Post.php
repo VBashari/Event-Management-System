@@ -10,22 +10,6 @@ class Post {
         self::$baseModel = new BaseModel('post');
     }
 
-    public static function insert(array $parameters) {
-        if(!$parameters)
-            throw new InvalidArgumentException("Insert parameters cannot be empty");
-
-        if(self::$baseModel->checkUserType($parameters['servicer_id']) == UserType::USER->value)
-            throw new InvalidArgumentException('User types cannot make posts');
-
-        try {
-            return self::$baseModel->insert($parameters);
-        } catch(InvalidArgumentException $ex) {
-            throw $ex;
-        } catch(PDOException $ex) {
-            throw $ex;
-        }
-    } 
-
     /**
      * Get specified post record
      * 

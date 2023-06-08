@@ -12,6 +12,8 @@ require_once __DIR__ . '/../utils/utils.php';
  * Endpoints:
  *      GET POST        services
  *      GET POST        services?limit={}&offset={}
+ *      GET             services?q={}
+ *      GET             services?q={}&limit={}&offset={}
  *      GET PATCH DEL   services/{id}
  *      GET             services/user/{id}
  *      GET             services/user/{id}?limit={}&offset={}
@@ -24,7 +26,7 @@ class ServiceController implements IController {
     private function __construct() {}
 
     public static function __constructStatic() {
-        self::$photoController = new PhotoController('service', 'service_photo');
+        self::$photoController = new PhotoController('service', 'service_photo', '/../../../photos/services');
     }
 
     /**
@@ -60,7 +62,30 @@ class ServiceController implements IController {
         try {
             $services = Service::getAllBy((int) getURIparam(3), $limitQueries['limit'] ?? null, $limitQueries['offset'] ?? null);
 
-            //Getting photos for each post
+            //Getting photos & tags for each post
+            for($i = 0; $i < count($services); $i++) {
+                $photos = self::$photoController->baseModel->getAllBy($services[$i]['service_id']);
+                $tags = Tag::getAllBy($services[$i]['service_id']);
+
+                if($photos)
+                    $services[$i]['photos'] = $photos;
+                
+                if($tags)
+                    $services[$i]['tags'] = $tags;
+            }
+            
+            http_response_code(200);
+            return $services;
+        } catch(\Exception $ex) {
+            exitError(400, $ex->getMessage());
+        }
+    }
+
+    public static function getSearch($parameters) {
+        try {
+            $services = Service::getSearch($parameters['q'], $parameters['limit'] ?? null, $parameters['offset'] ?? null);
+            
+            //Getting photos & tags for each post
             for($i = 0; $i < count($services); $i++) {
                 $photos = self::$photoController->baseModel->getAllBy($services[$i]['service_id']);
                 $tags = Tag::getAllBy($services[$i]['service_id']);
@@ -108,13 +133,16 @@ class ServiceController implements IController {
      */
     public static function create() {
         self::$errors = [];
-
+        
         //Error checking
-        self::validateTitle($_POST['title']);
-        self::validateDescription($_POST['description']);
-        self::validateAvgPrice($_POST['avg_price']);
-        self::validateTags($_POST['tags']);
-        self::$photoController->validatePhotos($_FILES['photos']['name'], $_POST['alt_texts'], $_POST['captions']);
+        if(!isset($_POST['servicer_id']))
+            self::$errors['servicer_id'] = 'Required value';
+        
+        self::validateTitle($_POST['title'] ?? null);
+        self::validateDescription($_POST['description'] ?? null);
+        self::validateAvgPrice($_POST['avg_price'] ?? null);
+        self::validateTags($_POST['tags'] ?? null);
+        self::$photoController->validatePhotos($_FILES['photos']['name'] ?? null, $_POST['alt_texts'] ?? null, $_POST['captions'] ?? null);
 
         if(self::$photoController->errors)
             self::$errors = array_merge(self::$errors, self::$photoController->errors);
@@ -125,27 +153,33 @@ class ServiceController implements IController {
         //Service insertion
         try {
             $input = [
+                'servicer_id' => $_POST['servicer_id'],
                 'title' => $_POST['title'],
-                'description' => $_POST['description'],
                 'avg_price' => $_POST['avg_price']
             ];
 
-            if(Service::$baseModel->insert($input)) {
+            if(isset($_POST['description']))
+                $input['description'] = $_POST['description'];
+
+            if(Service::insert($input)) {
                 $serviceID = Service::$baseModel->db->lastInsertId();
                 $photos = $_FILES['photos'];
 
-                //Upload photos & tags of the service
+                //Upload photos of the service
                 for($i = 0; $i < count($photos['name']); $i++)
                     self::$photoController->uploadPhoto([
-                        'post_id' => $postId, 
-                        'photo_reference' => $photos['full_path'][$i], 
-                        'alt_text' => $_REQUEST['alt_text'][$i],
-                        'caption' => $_REQUEST['caption'][$i]
+                        'service_id' => $serviceID, 
+                        'photo_reference' => $photos['full_path'][$i] ?? null, 
+                        'alt_text' => $_REQUEST['alt_texts'][$i] ?? null,
+                        'caption' => $_REQUEST['captions'][$i] ?? null
                     ], $photos['tmp_name'][$i]);
 
-                foreach($_POST['tags'] as $tag)
-                    TagController::insert($serviceID, $tag);
-                
+                //Upload tags, if there are any
+                if(isset($_POST['tags'])) {
+                    foreach($_POST['tags'] as $tag)
+                        TagController::insert($serviceID, $tag);
+                }
+
                 http_response_code(201);
             } else
                 http_response_code(400);
@@ -159,44 +193,47 @@ class ServiceController implements IController {
      */
     public static function update() {
         self::$errors = [];
+        //TODO fix for getting images
+        $data = json_decode(file_get_contents('php://input'), true);
 
         //Error checking
-        if($_REQUEST['title']) {
-            self::validateTitle($_REQUEST['title']);
-            $update['title'] = $_REQUEST['title'];
+        if(!$data)
+            exitError(400, 'Update cannot be empty');
+
+        if(isset($data['title'])) {
+            self::validateTitle($data['title']);
+            $update['title'] = $data['title'];
         }
 
-        if($_REQUEST['description']) {
-            self::validateDescription($_REQUEST['description']);
-            $update['description'] = $_REQUEST['description'];
+        if(isset($data['description'])) {
+            self::validateDescription($data['description']);
+            $update['description'] = $data['description'];
         }
 
-        if($_REQUEST['avg_price']) {
-            self::validateAvgPrice($_REQUEST['avg_price']);
-            $update['avg_price'] = $_REQUEST['avg_price'];
+        if(isset($data['avg_price'])) {
+            self::validateAvgPrice($data['avg_price']);
+            $update['avg_price'] = $data['avg_price'];
         }
 
-        if($_FILES['photos']) {
-            self::$photoController->validatePhotos($_FILES['photos']['name'], $_REQUEST['alt_texts'], $_REQUEST['captions']);
+        if(isset($_FILES['photos'])) {
+            self::$photoController->validatePhotos($_FILES['photos']['name'], $data['alt_texts'], $data['captions']);
 
             if(self::$photoController->errors)
             self::$errors = array_merge(self::$errors, self::$photoController->errors);
         }
             
-        if($_REQUEST['tags'])
-            self::validateTags($_REQUEST['tags']);
+        if(isset($data['tags']))
+            self::validateTags($data['tags']);
 
         if(self::$errors)
             exitError(400, self::$errors);
 
+
+        $serviceID = (int) getURIparam(2);
+
         //Perform update
         if(isset($update)) {
             try {
-                //Get ID from uri
-                $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-                $pathParts = array_slice(explode('/', $path), 2);
-                $serviceID = $pathParts[2];
-
                 Service::$baseModel->update($update, ['service_id' => $serviceID]);
             } catch(\Exception $ex) {
                 exitError(400, $ex->getMessage());
@@ -204,10 +241,10 @@ class ServiceController implements IController {
         }
 
         //Update photos & tags
-        if($_FILES['photos'])
+        if(isset($_FILES['photos']))
             self::$photoController->updatePhotos($serviceID);
         
-        if($_REQUEST['tags'])
+        if(isset($data['tags']))
             TagController::updateTags($serviceID);
         
         http_response_code(200);
@@ -233,6 +270,9 @@ class ServiceController implements IController {
      * @param array $tags
      */
     private static function validateTags($tags) {
+        if(!$tags)
+            return;
+
         foreach($tags as $tag) {
             $tagError = TagController::validateTag($tag);
 
@@ -249,8 +289,10 @@ class ServiceController implements IController {
      * @param string $title
      */
     private static function validateTitle($title) {
-        if(!$title || strlen($title) < 3 || strlen($title) > 120)
-            return false; self::$errors['title'] = 'Invalid title (Accepted values: 3-120 characters)';
+        if(!$title)
+            self::$errors['title'] = 'Required value';
+        elseif(strlen($title) < 3 || strlen($title) > 120)
+            self::$errors['title'] = 'Invalid title (Accepted values: 3-120 characters)';
     }
 
     /**
@@ -269,7 +311,9 @@ class ServiceController implements IController {
      * @param string $avgPrice
      */
     private static function validateAvgPrice($avgPrice) {
-        if(!avgPrice || avgPrice <= 0)
+        if(!$avgPrice)
+            self::$errors['avg_price'] = 'Required value';
+        elseif($avgPrice <= 0)
             self::$errors['avg_price'] = 'Invalid price (positive values only)';
     }
 }

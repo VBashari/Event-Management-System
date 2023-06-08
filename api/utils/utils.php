@@ -1,9 +1,5 @@
 <?php
 
-$postPhotosPath = '../../photos/posts';
-$servicePhotosPath = '../../photos/services';
-$acceptedImageTypes = ['png', 'jpg', 'jpeg'];
-
 /**
  * Check if date matches the MYSQL pattern: if not, adds an error to the class errors
  * 
@@ -11,8 +7,13 @@ $acceptedImageTypes = ['png', 'jpg', 'jpeg'];
  * @return string
  */
 function validateDate($date) {
-    if(!$date || !preg_match('\d{4}-\d{2}-\d{2} \d{2}-\d{2}-\d{2}'))
-        return 'Invalid date (Accepted values: YYYY-MM-DD HH-MM-SS)';
+    if(!$date)
+        return 'Required value';
+
+    if(!preg_match_all("/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/", $date))
+        return 'Invalid date (Accepted values: YYYY-MM-DD HH:MM:SS)';
+    
+    return null;
 }
 
 /**
@@ -28,6 +29,6 @@ function getURIparam($paramIndex) {
 
 function exitError($code, $message) {
     http_response_code($code);
-    echo json_encode(array("error" => $message));
+    echo json_encode(is_array($message) ? $message : array("error" => $message));
     exit();
 }
