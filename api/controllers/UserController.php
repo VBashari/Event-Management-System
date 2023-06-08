@@ -60,8 +60,7 @@ class UserController implements GenericController {
         self::validateFullName($_POST['full_name'] ?? null);
         self::validateEmail($_POST['email'] ?? null);
         self::validatePassword($_POST['password'] ?? null);
-        self::validateConfirmPassword($_POST['password'] ?? null, $_POST['confirm_password'] ?? null);
-        
+   
         if(self::$errors)
             exitError(400, self::$errors);
         
@@ -70,8 +69,7 @@ class UserController implements GenericController {
                 'user_type' => $_POST['user_type'],
                 'username' => $_POST['username'],
                 'email' => $_POST['email'],
-                'password' => $_POST['password'],
-                'confirm_password' => $_POST['confirm_password']
+                'password' => $_POST['password']
             ]);
             http_response_code(201);
         } catch(\Exception $ex) {
@@ -98,10 +96,8 @@ class UserController implements GenericController {
 
         if(isset($data['password'])) {
             $update['password'] = $data['password'];
-            $update['confirm_password'] = $data['confirm_password'] ?? null;
 
             self::validatePassword($update['password']);
-            self::validateConfirmPassword($update['password'], $update['confirm_password']);
         }
 
         if(self::$errors)
@@ -185,18 +181,5 @@ class UserController implements GenericController {
         elseif(!preg_match('/^(?=.*[a-zA-Z])(?=.*\d)[\w]{8,}$/', $password))
             self::$errors['password'] = 'Invalid password (Accepted values: 8 or more characters,'
                                         . ' at least one lowercase/uppercase letter, and a number)';
-    }
-
-    /**
-     * Check if confirm-password is inputted and matches with password: if not, adds an error to the class errors
-     * 
-     * @param string $password
-     * @param string $confirmPassword
-     */
-    private static function validateConfirmPassword($password, $confirmPassword) {
-        if(!$confirmPassword)
-            self::$errors['confirm_password'] = 'Required value';
-        elseif(strcmp($password, $confirmPassword) != 0)
-            self::$errors['confirm_password'] = 'Password & confirm-password do not match';
     }
 }
