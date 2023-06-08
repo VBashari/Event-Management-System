@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/errors.php';
+
 /**
  * Check if date matches the MYSQL pattern: if not, adds an error to the class errors
  * 
@@ -27,17 +29,11 @@ function getURIparam($paramIndex) {
     return $pathParts[$paramIndex];
 }
 
-function exitError($code, $message) {
-    http_response_code($code);
-    echo json_encode(is_array($message) ? $message : array("error" => $message));
-    exit();
-}
-
 function readRequestBody() {
     $body = file_get_contents('php://input');
 
     $headers = getallheaders();
-    $contentType = $headers['Content-Type'];
+    $contentType = $headers['Content-Type'] ?? null;
 
     if ($contentType == 'application/json') {
         return json_decode($body, true);

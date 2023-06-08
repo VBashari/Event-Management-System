@@ -108,7 +108,7 @@ class BaseModel {
      * Insert new record
      * 
      * @param array $parameters: key-value input of columns and values
-     * @return boolean
+     * @return string|false
      */
     public function insert(array $parameters) {
         if(!$parameters)
@@ -136,12 +136,13 @@ class BaseModel {
 
         try {
             $stmt->execute($insertValues);
+            return $this->db->lastInsertId();
         } catch(PDOException $ex) {
             throw $ex;
         }
 
         $stmt->closeCursor();
-        return true;
+        return false;
     }
 
     /**
@@ -150,7 +151,7 @@ class BaseModel {
      * 
      * @param array $parameters:     key-value input of columns and values
      * @param string $servicerField: name of the servicer field in this table
-     * @return boolean
+     * @return string|false
      */
     public function insertUserCheck(array $parameters, $servicerField) {
         if(!$parameters)
@@ -172,7 +173,7 @@ class BaseModel {
         }
 
         $stmt->closeCursor();
-        return true;
+        return false;
     }
 
     /***
@@ -202,12 +203,13 @@ class BaseModel {
         
         try {
             $stmt->execute($values);
+            return $stmt->rowCount() > 0;
         } catch(PDOException $ex) {
             throw $ex;
         }
 
         $stmt->closeCursor();
-        return true;
+        return false;
     }
 
     /**
@@ -233,12 +235,13 @@ class BaseModel {
         
         try {
             $stmt->execute();
+            return $stmt->rowCount() > 0;
         } catch(PDOException $ex) {
             throw $ex;
         }
 
         $stmt->closeCursor();
-        return true;
+        return false;
     }
 
 
@@ -247,7 +250,7 @@ class BaseModel {
     /**
      * Gets the user type of the specified user
      * @param integer $userId: the specified user's ID
-     * @return string
+     * @return string|false
      */
     public function checkUserType($userId) {
         $stmt = $this->db->prepare('SELECT user_type FROM user WHERE user_id = :user_id');

@@ -47,8 +47,12 @@ class UserController implements GenericController {
 
     public static function get() {
         try {
-            http_response_code(200);
-            return User::get((int) getURIparam(2));
+            $user_id = (int) getURIparam(2);
+            $user = User::get($user_id);
+            if ($user === false) {
+                exitError(404, "User with id $user_id does not exist");
+            }
+            return $user;
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
         }
@@ -72,13 +76,20 @@ class UserController implements GenericController {
             exitError(400, self::$errors);
         
         try {
-            User::$baseModel->insert([
+            $id = User::$baseModel->insert([
                 'user_type' => self::$data['user_type'],
                 'username' => self::$data['username'],
                 'email' => self::$data['email'],
                 'password' => self::$data['password']
             ]);
             http_response_code(201);
+            
+            return [
+                "error" => 0,
+                "result" => [
+                    "id" => $id
+                ]
+            ];
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
         }
@@ -89,6 +100,12 @@ class UserController implements GenericController {
      */
     public static function update() {
         self::$errors = [];
+
+        $user_id = (int) getURIparam(2);
+        $user = User::get($user_id);
+        if ($user === false) {
+            exitError(404, "User with id $user_id does not exist");
+        }
 
         if(isset(self::$data['username'])) {
             $update['username'] = self::$data['username'];
@@ -102,8 +119,12 @@ class UserController implements GenericController {
 
         if(isset(self::$data['password'])) {
             $update['password'] = self::$data['password'];
-
             self::validatePassword($update['password']);
+        }
+
+        if(isset(self::$data['full_name'])) {
+            $update['full_name'] = self::$data['full_name'];
+            self::validateFullName($update['full_name']);
         }
 
         if(self::$errors)
@@ -111,8 +132,12 @@ class UserController implements GenericController {
         
         if(isset($update)) {
             try {
-                User::$baseModel->update($update, ['user_id' => (int) getURIparam(2)]);
-                http_response_code(200);
+                User::$baseModel->update($update, ['user_id' => $user_id]);
+                $user = User::get($user_id);
+                return [
+                    "error" => 0,
+                    "result" => $user
+                ];
             } catch(\Exception $ex) {
                 exitError(400, $ex->getMessage());
             }
@@ -121,6 +146,12 @@ class UserController implements GenericController {
 
     public static function delete() {
         try {
+            $user_id = (int) getURIparam(2);
+            $user = User::get($user_id);
+            if ($user === false) {
+                exitError(404, "User with id $user_id does not exist");
+            }
+            
             User::$baseModel->delete(['user_id' => (int) getURIparam(2)]);
             http_response_code(204);
         } catch(\Exception $ex) {

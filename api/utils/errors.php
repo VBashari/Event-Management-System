@@ -25,9 +25,12 @@ function respondError($code, $message) {
 }
 
 // TODO replace usages of this with respondError
-function exitError($code, $message) {
+function exitError($code, $errors) {
     http_response_code($code);
-    echo json_encode(is_array($message) ? $message : array("error" => $message));
+    echo json_encode([
+        "error" => $code,
+        "result" => $errors
+    ]);
     exit();
 }
 
