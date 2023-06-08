@@ -14,11 +14,9 @@
         </div>
         
         
-          <form method="get" action="TEMP-searchres.php">
+          <form method="get" action="ServiceSearch.html">
             <div class="rectangle-4">
               <input type="text" name="q" placeholder="What event are you hosting?">
-              <!-- <input type="hidden" name="limit" value="1">
-              <input type="hidden" name="offset" value="0"> -->
             </div>
 
             <div class="rectangle-6">
@@ -27,15 +25,23 @@
       </div>
       <div class="col">
         <div class="rectangle-2">
-          <div class="sign-up">Sign up</div>
+          <button type="button" id="btnSignUp" class="sign-up">Sign up</button>
         </div>
         <div class="rectangle-3">
-          <div class="log-in">Log in</div>
+          <button type="button" id="btnLogIn" class="log-in">Log in</button>
         </div>
       </div>
     </div>
   </div>
 
-  <script src="homepage.js"></script>
+  <script>
+    document.getElementById('btnSignUp').addEventListener('click', (e) => {
+      window.location.href = './signup.html';
+    })
+    
+    document.getElementById('btnLogIn').addEventListener('click', (e) => {
+        window.location.href = './login.html';
+    })
+  </script>
 </body>
 </html>
