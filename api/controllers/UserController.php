@@ -52,7 +52,7 @@ class UserController implements GenericController {
             if ($user === false) {
                 exitError(404, "User with id $user_id does not exist");
             }
-            
+
             http_response_code(200);
             return $user;
         } catch(\Exception $ex) {
@@ -78,18 +78,19 @@ class UserController implements GenericController {
             exitError(400, self::$errors);
         
         try {
-            $id = User::$baseModel->insert([
+            $user_id = User::$baseModel->insert([
                 'user_type' => self::$data['user_type'],
                 'username' => self::$data['username'],
                 'email' => self::$data['email'],
                 'password' => self::$data['password']
             ]);
+            
             http_response_code(201);
             
             return [
                 "error" => 0,
                 "result" => [
-                    "id" => $id
+                    "id" => $user_id
                 ]
             ];
         } catch(\Exception $ex) {

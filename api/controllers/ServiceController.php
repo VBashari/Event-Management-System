@@ -116,7 +116,7 @@ class ServiceController implements IController {
             if ($service === false) {
                 exitError(404, "Service with id $service_id does not exist");
             }
-            
+
             //Get accompanying photos & tags
             $photos = self::$photoController->baseModel->getAllBy($service['service_id']);
             $tags = Tag::getAllBy($service['service_id']);
@@ -167,7 +167,8 @@ class ServiceController implements IController {
             if(isset(self::$data['description']))
                 $input['description'] = self::$data['description'];
 
-            if(Service::insert($input)) {
+            $service_id = Service::insert($input);
+            if ($service_id !== false) {
                 $serviceID = Service::$baseModel->db->lastInsertId();
                 $photos = $_FILES['photos'];
 
@@ -187,6 +188,13 @@ class ServiceController implements IController {
                 }
 
                 http_response_code(201);
+
+                return [
+                    "error" => 0,
+                    "result" => [
+                        "id" => $service_id
+                    ]
+                ];
             } else
                 http_response_code(400);
         } catch(\Exception $ex) {

@@ -118,8 +118,20 @@ class RequestController implements IController {
             if(isset(self::$data['status']))
                 $input['status'] = self::$data['status'];
 
-            Request::$baseModel->insertUserCheck($input, 'servicer_id');
-            http_response_code(201);
+            $request_id = Request::$baseModel->insertUserCheck($input, 'servicer_id');
+            if ($request_id !== false) {
+                http_response_code(201);
+
+                return [
+                    "error" => 0,
+                    "result" => [
+                        "id" => $request_id
+                    ]
+                ];
+            }
+            else
+                http_response_code(400);
+            
         } catch(\Exception $ex) {
             if($ex->getCode() == 23000)
                 exitError(400, 'You already have a request to a servicer with this date & time');

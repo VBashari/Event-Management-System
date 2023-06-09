@@ -108,13 +108,21 @@ class EventController implements IController {
             exitError(400, self::$errors);
         
         try {
-            Event::insert([
+            $event_id = Event::insert([
                 'requester_id' => self::$data['requester_id'],
                 'organizer_id' => self::$data['organizer_id'],
                 'title' => self::$data['title'],
                 'scheduled_date' => self::$data['scheduled_date']
             ]);
+
             http_response_code(201);
+
+            return [
+                "error" => 0,
+                "result" => [
+                    "id" => $event_id
+                ]
+            ];
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
         }

@@ -35,7 +35,7 @@ class PostController implements IController {
             if ($post === false) {
                 exitError(404, "Post with id $post_id does not exist");
             }
-            
+
             $photos = self::$photoController->baseModel->getAllBy($post['post_id']);
 
             if($photos)
@@ -106,7 +106,8 @@ class PostController implements IController {
            exitError(400, self::$errors);
 
         try {
-            if(Post::$baseModel->insertUserCheck(['servicer_id' => self::$data['servicer_id'], 'title' => self::$data['title']], 'servicer_id')) {
+            $post_id = Post::$baseModel->insertUserCheck(['servicer_id' => self::$data['servicer_id'], 'title' => self::$data['title']], 'servicer_id');
+            if($post_id !== false) {
                 $postID = Post::$baseModel->db->lastInsertID();
                 $photos = $_FILES['photos'];
 
@@ -119,6 +120,13 @@ class PostController implements IController {
                     ], $photos['tmp_name'][$i]);
                 
                 http_response_code(201);
+                
+                return [
+                    "error" => 0,
+                    "result" => [
+                        "id" => $post_id
+                    ]
+                ];
             }else
                 exitError(400, 'The post couldn\'t be uploaded');
         } catch(\Exception $ex) {
