@@ -30,7 +30,12 @@ class PostController implements IController {
 
     public static function get() {
         try {
-            $post = Post::get((int) getURIparam(2));
+            $post_id = (int) getURIparam(2);
+            $post = Post::get($post_id);
+            if ($post === false) {
+                exitError(404, "Post with id $post_id does not exist");
+            }
+            
             $photos = self::$photoController->baseModel->getAllBy($post['post_id']);
 
             if($photos)

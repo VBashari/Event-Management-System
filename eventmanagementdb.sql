@@ -11,7 +11,7 @@ CREATE TABLE user (
 );
 
 -- Dumping data for table `user`
-INSERT INTO user VALUES (1,'USER','user1','user1@gmail.com','password123'),(4,'USER','user2','user2@gmail.com','password123'),(5,'VNDR','vendor1','vendr1@gmail.com','passi1234'),(6,'VNDR','vendor2','vendr2@gmail.com','passi1234'),(8,'ORG','event org1','evorg1@gmail.com','passi234'),(9,'ORG','event_org2','evorg2@yahoo.com','password123');
+INSERT INTO user VALUES (1,'USER','user1','User1 Last1', 'user1@gmail.com','password123'),(4,'USER','user2','User2 Last2', 'user2@gmail.com','password123'),(5,'VNDR','vendor1','Vendor1 Last3','vendr1@gmail.com','passi1234'),(6,'VNDR','vendor2','Vendor2 Last4','vendr2@gmail.com','passi1234'),(8,'ORG','event_org1','Organization 1','evorg1@gmail.com','passi234'),(9,'ORG','event_org2','Organization 2', 'evorg2@yahoo.com','password123');
 
 
 -- Table structure for table `request`

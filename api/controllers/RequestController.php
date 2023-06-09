@@ -68,8 +68,14 @@ class RequestController implements IController {
      */
     public static function get() {
         try{
+            $request_id = (int) getURIparam(2);
+            $request = Request::get($request_id);
+            if ($request === false) {
+                exitError(404, "Request with id $request_id does not exist");
+            }
+
             http_response_code(200);
-            return Request::get((int) getURIparam(2));
+            return $request;
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
         }

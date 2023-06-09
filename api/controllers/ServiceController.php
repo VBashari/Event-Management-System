@@ -111,8 +111,12 @@ class ServiceController implements IController {
      */
     public static function get() {
         try {
-            $service = Service::get((int) getURIparam(2));
-
+            $service_id = (int) getURIparam(2);
+            $service = Service::get($service_id);
+            if ($service === false) {
+                exitError(404, "Service with id $service_id does not exist");
+            }
+            
             //Get accompanying photos & tags
             $photos = self::$photoController->baseModel->getAllBy($service['service_id']);
             $tags = Tag::getAllBy($service['service_id']);

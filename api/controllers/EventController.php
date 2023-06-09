@@ -55,8 +55,14 @@ class EventController implements IController {
 
     public static function get() {
         try {
+            $event_id = (int) getURIparam(2);
+            $event = Event::get($event_id);
+            if ($event === false) {
+                exitError(404, "Event with id $event_id does not exist");
+            }
+
             http_response_code(200);
-            return Event::get((int) getURIparam(2));
+            return $event;
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
         }

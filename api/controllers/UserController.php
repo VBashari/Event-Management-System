@@ -52,6 +52,8 @@ class UserController implements GenericController {
             if ($user === false) {
                 exitError(404, "User with id $user_id does not exist");
             }
+            
+            http_response_code(200);
             return $user;
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
