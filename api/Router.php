@@ -5,6 +5,7 @@ require_once __DIR__ . '/controllers/RequestController.php';
 require_once __DIR__ . '/controllers/PostController.php';
 require_once __DIR__ . '/controllers/EventController.php';
 require_once __DIR__ . '/controllers/UserController.php';
+require_once __DIR__ . '/controllers/SessionController.php';
 
 class Router {
     private static $routes = [];
@@ -125,3 +126,5 @@ Router::addGET('/^\/api\/events\/user\/\d+\?month=\d+&year=\d+$/', 'EventControl
 Router::addGET('/^\/api\/users\?type=(user|servicer)(&limit=\d+?&offset=\d+)?$/', 'UserController', 'getAllByType');
 
 Router::addGET('/^\/api\/services\?q=.+(&limit=\d+?&offset=\d+)?$/', 'ServiceController', 'getSearch');
+
+Router::addPOST('/^\/api\/sessions$/', 'SessionController', 'create');

@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/interfaces/GenericController.php';
 require_once __DIR__ . '/../models/User.php';
-require_once __DIR__ . '/../utils/UserType.php';
+require_once __DIR__ . '/../validators/UserValidator.php';
 require_once __DIR__ . '/../utils/utils.php';
 
 //TODO add auth check
@@ -17,7 +17,6 @@ require_once __DIR__ . '/../utils/utils.php';
  */
 
 class UserController implements GenericController {
-    private static $errors;
     private static $data;
 
     private function __construct() {}
@@ -64,18 +63,20 @@ class UserController implements GenericController {
      * Validate input data and, if no errors occur, perform insertion
      */
     public static function create() {
-        self::$errors = [];
+        UserValidator::resetErrors();
 
         //echo "create " . self::$data['user_type'];
         
-        self::validateUserType(self::$data['user_type'] ?? null);
-        self::validateUsername(self::$data['username'] ?? null);
-        self::validateFullName(self::$data['full_name'] ?? null);
-        self::validateEmail(self::$data['email'] ?? null);
-        self::validatePassword(self::$data['password'] ?? null);
-   
-        if(self::$errors)
-            exitError(400, self::$errors);
+        UserValidator::validateUserType(self::$data['user_type'] ?? null);
+        UserValidator::validateUsername(self::$data['username'] ?? null, true);
+        UserValidator::validateFullName(self::$data['full_name'] ?? null);
+        UserValidator::validateEmail(self::$data['email'] ?? null, true);
+        UserValidator::validatePassword(self::$data['password'] ?? null);
+        $errors = UserValidator::getErrors();
+
+        if($errors) {
+            exitError(400, $errors);
+        }
         
         try {
             $passwordHash = password_hash(self::$data['password'], PASSWORD_DEFAULT);
@@ -103,7 +104,7 @@ class UserController implements GenericController {
      * Validate the specified update data and, if no errors occur, perform update
      */
     public static function update() {
-        self::$errors = [];
+        UserValidator::resetErrors();
 
         $user_id = (int) getURIparam(2);
         $user = User::get($user_id);
@@ -113,27 +114,28 @@ class UserController implements GenericController {
 
         if(isset(self::$data['username'])) {
             $update['username'] = self::$data['username'];
-            self::validateUsername($update['username']);
+            UserValidator::validateUsername($update['username']);
         }
 
         if(isset(self::$data['email'])) {
             $update['email'] = self::$data['email'];
-            self::validateEmail($update['email']);
+            UserValidator::validateEmail($update['email']);
         }
 
         if(isset(self::$data['password'])) {
             $passwordHash = password_hash(self::$data['password'], PASSWORD_DEFAULT);
             $update['password'] = $passwordHash;
-            self::validatePassword($update['password']);
+            UserValidator::validatePassword($update['password']);
         }
 
         if(isset(self::$data['full_name'])) {
             $update['full_name'] = self::$data['full_name'];
-            self::validateFullName($update['full_name']);
+            UserValidator::validateFullName($update['full_name']);
         }
 
-        if(self::$errors)
-            exitError(400, self::$errors);
+        $errors = UserValidator::getErrors();
+        if($errors)
+            exitError(400, $errors);
         
         if(isset($update)) {
             try {
@@ -162,71 +164,6 @@ class UserController implements GenericController {
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
         }
-    }
-
-    //Validation functions
-
-    /**
-     * Check if user type is 'USER', 'VNDR', or 'ORG': if not, adds an error to the class errors
-     * 
-     * @param string $userType
-     */
-    private static function validateUserType($userType) {
-        if(!$userType)
-            self::$errors['user_type'] = 'Required value';
-        elseif(!in_array($userType, array(UserType::USER->value, UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value)))
-            self::$errors['user_type'] = "Invalid user type (Accepted values: 'USER', 'VNDR', 'ORG')";
-    }
-
-    /**
-     * Check if username is 3-40 chars. long: if not, adds an error to the class errors
-     * 
-     * @param string $username
-     */
-    private static function validateUsername($username) {
-        if(!$username)
-            self::$errors['username'] = 'Required value';
-        elseif(strlen($username) < 3 || strlen($username) > 40)
-            self::$errors['username'] = 'Username must be between 3-40 characters';
-        elseif(!preg_match('/^[a-zA-Z0-9_-]+$/', $username))
-            self::$errors['username'] = 'Username can only contain letters, numbers, underscores and dashes)';
-        elseif(User::doesUsernameExist($username))
-            self::$errors['username'] = 'Username is taken';
-    }
-
-    private static function validateFullName($fullName) {
-        if(!$fullName)
-            self::$errors['full_name'] = 'Required value';
-        elseif(strlen($fullName) < 3 || strlen($fullName) > 80)
-            self::$errors['full_name'] = 'Name must be between 3-40 characters)';
-    }
-
-    /**
-     * Check if email is valid: if not, adds an error to the class errors
-     * 
-     * @param string $email
-     */
-    private static function validateEmail($email) {
-        if(!$email)
-            self::$errors['email'] = 'Required value';
-        elseif(!filter_var($email, FILTER_VALIDATE_EMAIL))
-            self::$errors['email'] = 'Invalid email (Accepted format: example@example.com)';
-        elseif(User::doesEmailExist($email))
-            self::$errors['email'] = 'Email is taken';
-    }
-
-    /**
-    * Check if password is at least 8 characters long, and has at least one uppercase or lowercase letter 
-    * and a number: if not, adds an error to the class errors
-    * 
-    * @param string $password
-    */
-    private static function validatePassword($password) {
-        if(!$password)
-            self::$errors['password'] = 'Required value';
-        elseif(!preg_match('/^(?=.*[a-zA-Z])(?=.*\d)[\w]{8,}$/', $password))
-            self::$errors['password'] = 'Password must contain 8 or more characters,'
-                                        . ' at least one lowercase/uppercase letter, and a number)';
     }
 }
 

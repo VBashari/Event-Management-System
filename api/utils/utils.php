@@ -43,3 +43,34 @@ function readRequestBody() {
         return $data;
     }
 }
+
+function loadEnv($file) {
+    $env = [];
+    if (file_exists($file)) {
+        $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($lines as $line) {
+            if (strpos(trim($line), '#') === 0) {
+                continue;
+            }
+
+            list($key, $value) = explode('=', $line, 2);
+            $key = trim($key);
+            $value = trim($value);
+
+            if (!getenv($key)) {
+                putenv("$key=$value");
+                $env[$key] = $value;
+            }
+        }
+    }
+    return $env;
+}
+
+function base64UrlEncode($data) {
+    return str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($data));
+}
+
+function base64UrlDecode($data) {
+    $paddedData = str_pad($data, strlen($data) % 4, '=', STR_PAD_RIGHT);
+    return base64_decode(str_replace(['-', '_'], ['+', '/'], $paddedData));
+}

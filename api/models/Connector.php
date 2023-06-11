@@ -1,7 +1,5 @@
 <?php
 
-$config = include __DIR__ . '/../utils/config.php';
-
 class Connector extends PDO {
     private static $instance;
 
@@ -13,10 +11,8 @@ class Connector extends PDO {
     }
 
     private final function __construct() {
-        global $config;
-        
-        $dsn = 'mysql:host=' . $config['host'] . ';dbname=' . $config['name'];
-        parent::__construct($dsn, $config['user'], $config['password']);
+        $dsn = 'mysql:host=' . getenv('DBHOST') . ';dbname=' . getenv('DBNAME');
+        parent::__construct($dsn, getenv('DBUSER'), getenv('DBPASS'));
 
         array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8");
         $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
