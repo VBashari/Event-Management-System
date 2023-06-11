@@ -78,11 +78,12 @@ class UserController implements GenericController {
             exitError(400, self::$errors);
         
         try {
+            $passwordHash = password_hash(self::$data['password'], PASSWORD_DEFAULT);
             $user_id = User::$baseModel->insert([
                 'user_type' => self::$data['user_type'],
                 'username' => self::$data['username'],
                 'email' => self::$data['email'],
-                'password' => self::$data['password']
+                'password' => $passwordHash,
             ]);
             
             http_response_code(201);
@@ -121,7 +122,8 @@ class UserController implements GenericController {
         }
 
         if(isset(self::$data['password'])) {
-            $update['password'] = self::$data['password'];
+            $passwordHash = password_hash(self::$data['password'], PASSWORD_DEFAULT);
+            $update['password'] = $passwordHash;
             self::validatePassword($update['password']);
         }
 
@@ -185,7 +187,9 @@ class UserController implements GenericController {
         if(!$username)
             self::$errors['username'] = 'Required value';
         elseif(strlen($username) < 3 || strlen($username) > 40)
-            self::$errors['username'] = 'Invalid username (Accepted values: 3-40 characters; a-z, A-Z, 0-9, special characters)';
+            self::$errors['username'] = 'Username must be between 3-40 characters';
+        elseif(!preg_match('/^[a-zA-Z0-9_-]+$/', $username))
+            self::$errors['username'] = 'Username can only contain letters, numbers, underscores and dashes)';
         elseif(User::doesUsernameExist($username))
             self::$errors['username'] = 'Username is taken';
     }
@@ -194,7 +198,7 @@ class UserController implements GenericController {
         if(!$fullName)
             self::$errors['full_name'] = 'Required value';
         elseif(strlen($fullName) < 3 || strlen($fullName) > 80)
-            self::$errors['full_name'] = 'Invalid name (3-40 characters long)';
+            self::$errors['full_name'] = 'Name must be between 3-40 characters)';
     }
 
     /**
@@ -221,7 +225,7 @@ class UserController implements GenericController {
         if(!$password)
             self::$errors['password'] = 'Required value';
         elseif(!preg_match('/^(?=.*[a-zA-Z])(?=.*\d)[\w]{8,}$/', $password))
-            self::$errors['password'] = 'Invalid password (Accepted values: 8 or more characters,'
+            self::$errors['password'] = 'Password must contain 8 or more characters,'
                                         . ' at least one lowercase/uppercase letter, and a number)';
     }
 }

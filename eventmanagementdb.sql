@@ -4,7 +4,7 @@ CREATE TABLE user (
   user_type char(4) NOT NULL,
   username varchar(40) NOT NULL UNIQUE,
   email varchar(50) NOT NULL,
-  password varchar(20) NOT NULL,
+  password varchar(255) NOT NULL,
   PRIMARY KEY (user_id),
   CHECK (user_type IN ('USER', 'VNDR', 'ORG', 'ADMN')),
   UNIQUE (username) 
