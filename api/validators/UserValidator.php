@@ -11,8 +11,10 @@ class UserValidator {
     public static function validateUserType($userType) {
         if(!$userType)
             self::$errors['user_type'] = 'Required value';
-        elseif(!in_array($userType, array(UserType::USER->value, UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value)))
-            self::$errors['user_type'] = "Invalid user type (Accepted values: 'USER', 'VNDR', 'ORG')";
+        elseif(!in_array($userType, array(UserType::USER->value, UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value, UserType::ADMIN->value)))
+            self::$errors['user_type'] = "Invalid user type (Accepted values: 'USER', 'VNDR', 'ORG', 'ADMN')";
+        if($userType == UserType::ADMIN->value)
+            AuthController::requireUserType([UserType::ADMIN->value]); // only admins can create other admins
     }
 
     /**
@@ -61,7 +63,7 @@ class UserValidator {
     public static function validatePassword($password) {
         if(!$password)
             self::$errors['password'] = 'Required value';
-        elseif(!preg_match('/^(?=.*[a-zA-Z])(?=.*\d)[\w]{8,}$/', $password))
+        elseif(!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/', $password))
             self::$errors['password'] = 'Password must contain 8 or more characters,'
                                         . ' at least one lowercase/uppercase letter, and a number)';
     }

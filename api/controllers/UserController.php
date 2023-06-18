@@ -4,6 +4,7 @@ require_once __DIR__ . '/interfaces/GenericController.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../validators/UserValidator.php';
 require_once __DIR__ . '/../utils/utils.php';
+require_once __DIR__ . '/../controllers/AuthController.php';
 
 //TODO add auth check
 
@@ -26,6 +27,8 @@ class UserController implements GenericController {
     }
 
     public static function getAll($limitQueries = null) {
+        AuthController::requireUserType([UserType::ADMIN]);
+
         try {
             http_response_code(200);
             return User::getAll($limitQueries['limit'] ?? null, $limitQueries['offset'] ?? null);
@@ -36,9 +39,22 @@ class UserController implements GenericController {
 
     public static function getAllByType($queries) {
         try {
-            http_response_code(200);
-            return $queries['type'] == 'user' ? User::getAllUsers($queries['limit'] ?? null, $queries['offset'] ?? null) : 
-                                                User::getAllServicers($queries['limit'] ?? null, $queries['offset'] ?? null);
+            $type = $queries['type'] ?? null;
+            if ($type == 'user') {
+                AuthController::requireUserType([UserType::ADMIN->value]);
+
+                http_response_code(200);
+                return User::getAllUsers($queries['limit'] ?? null, $queries['offset'] ?? null);
+            }
+            elseif ($type == 'servicer') {
+                AuthController::requireUserType([null]);
+
+                http_response_code(200);
+                return User::getAllServicers($queries['limit'] ?? null, $queries['offset'] ?? null);
+            }
+            else {
+                exitError(400, "Invalid user type");
+            }
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
         }
@@ -47,6 +63,8 @@ class UserController implements GenericController {
     public static function get() {
         try {
             $user_id = (int) getURIparam(2);
+            AuthController::requireUser($user_id);
+            
             $user = User::get($user_id);
             if ($user === false) {
                 exitError(404, "User with id $user_id does not exist");
@@ -83,6 +101,7 @@ class UserController implements GenericController {
             $user_id = User::$baseModel->insert([
                 'user_type' => self::$data['user_type'],
                 'username' => self::$data['username'],
+                'full_name' => self::$data['full_name'],
                 'email' => self::$data['email'],
                 'password' => $passwordHash,
             ]);
@@ -107,6 +126,8 @@ class UserController implements GenericController {
         UserValidator::resetErrors();
 
         $user_id = (int) getURIparam(2);
+        AuthController::requireUser($user_id);
+        
         $user = User::get($user_id);
         if ($user === false) {
             exitError(404, "User with id $user_id does not exist");
@@ -123,9 +144,9 @@ class UserController implements GenericController {
         }
 
         if(isset(self::$data['password'])) {
+            UserValidator::validatePassword(self::$data['password']);
             $passwordHash = password_hash(self::$data['password'], PASSWORD_DEFAULT);
             $update['password'] = $passwordHash;
-            UserValidator::validatePassword($update['password']);
         }
 
         if(isset(self::$data['full_name'])) {
@@ -149,11 +170,16 @@ class UserController implements GenericController {
                 exitError(400, $ex->getMessage());
             }
         }
+        else {
+            http_response_code(204);
+        }
     }
 
     public static function delete() {
         try {
             $user_id = (int) getURIparam(2);
+            AuthController::requireUser($user_id);
+
             $user = User::get($user_id);
             if ($user === false) {
                 exitError(404, "User with id $user_id does not exist");

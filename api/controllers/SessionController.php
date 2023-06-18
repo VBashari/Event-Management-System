@@ -49,7 +49,7 @@ class SessionController  {
         }
     
         $user_id = $payload['user_id'] ?? null;
-        if (!$user_id) {
+        if ($user_id === null) {
             return null;
         }
 
@@ -58,7 +58,7 @@ class SessionController  {
             return null;
         }
 
-        $expectedSignature = base64UrlEncode(hash_hmac('sha256', "$header.$payload", getenv('JWT_SECRET_KEY'), true));
+        $expectedSignature = base64UrlEncode(hash_hmac('sha256', base64UrlEncode(json_encode($header)) . "." . base64UrlEncode(json_encode($payload)), getenv('JWT_SECRET_KEY'), true));
         if ($signature === $expectedSignature) {
             return $payload;
         } else {

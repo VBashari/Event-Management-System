@@ -56,7 +56,11 @@ class Event {
      */
     public static function get($eventId) {
         try {
-            return self::$baseModel->get('event_id', $eventId);
+            $result = self::$baseModel->get('event_id', $eventId);
+            $vendors = self::getAllVendorsFrom($eventId);
+            if($vendors)
+                $result['vendors'] = $vendors;
+            return $result;
         } catch(\Exception $ex) {
             throw $ex;
         }
@@ -84,7 +88,6 @@ class Event {
         //Get the vendors hired for each event
         for($i = 0; $i < count($result); $i++) {
             $vendors = self::getAllVendorsFrom($result[$i]['event_id']);
-            
             if($vendors)
                 $result[$i]['vendors'] = $vendors;
         }

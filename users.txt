@@ -1,0 +1,23 @@
+email: admin@example.com
+username: admin
+password: Adminpass1
+
+email: user1@gmail.com
+username: user1
+password: Userpass1
+
+email: user2@gmail.com
+username: user2
+password: Userpass2
+
+email: vendor1@example.com
+username: vendor1
+password: Vendorpass1
+
+email: vendor2@gmail.com
+username: vendor2
+password: Vendorpass2
+
+email: evorg1@gmail.com
+username: event_org1
+password: Eorgpass1
