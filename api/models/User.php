@@ -29,9 +29,9 @@ class User {
      * @return array query results
      */
 
-    public static function getAll($limit = null, $offset = null) {
+    public static function getAll($limit = null, $offset = null, $excludeFields = ['password']) {
         try {
-            return self::$baseModel->getAll($limit, $offset, ['password']);
+            return self::$baseModel->getAll($limit, $offset, $excludeFields);
         } catch(\Exception $ex) {
             throw $ex;
         }
@@ -44,9 +44,38 @@ class User {
      * @return query results
      */
 
-    public static function get($userId) {
+    public static function get($userId, $excludeFields = ['password']) {
         try {
-            return self::$baseModel->get('user_id', $userId, ['password']);
+            return self::$baseModel->get('user_id', $userId, $excludeFields);
+        } catch(\Exception $ex) {
+            throw $ex;
+        }
+    }
+    
+    /**
+     * Get specified record by username
+     * 
+     * @param string $username
+     * @return query results
+     */
+    public static function getByUsername($username, $excludeFields = ['password']) {
+        try {
+            return self::$baseModel->get('username', $username, $excludeFields);
+        } catch(\Exception $ex) {
+            throw $ex;
+        }
+    }
+
+    /**
+     * Get specified record by email
+     * 
+     * @param string $email
+     * @return query results
+     */
+
+    public static function getByEmail($email, $excludeFields = ['password']) {
+        try {
+            return self::$baseModel->get('email', $email, $excludeFields);
         } catch(\Exception $ex) {
             throw $ex;
         }
@@ -201,9 +230,6 @@ class User {
 
         return $stmt->rowCount() == 0 ? false : true;
     }
-
-    //?? TODO needs hashing
-    public static function changePassword($userId, $oldPassword, $newPassword) {}
 }
 
 >>>>>>> api_rewrite

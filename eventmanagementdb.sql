@@ -4,14 +4,14 @@ CREATE TABLE user (
   user_type char(4) NOT NULL,
   username varchar(40) NOT NULL UNIQUE,
   email varchar(50) NOT NULL,
-  password varchar(20) NOT NULL,
+  password varchar(255) NOT NULL,
   PRIMARY KEY (user_id),
   CHECK (user_type IN ('USER', 'VNDR', 'ORG', 'ADMN')),
   UNIQUE (username) 
 );
 
 -- Dumping data for table `user`
-INSERT INTO user VALUES (1,'USER','user1','user1@gmail.com','password123'),(4,'USER','user2','user2@gmail.com','password123'),(5,'VNDR','vendor1','vendr1@gmail.com','passi1234'),(6,'VNDR','vendor2','vendr2@gmail.com','passi1234'),(8,'ORG','event org1','evorg1@gmail.com','passi234'),(9,'ORG','event_org2','evorg2@yahoo.com','password123');
+INSERT INTO user VALUES (0,'ADMN','admin','Event Management Admin', 'admin@example.com','$2y$10$ApyzsB45IsPJAWmpB7MnCOdl7bqhBFKyJ3GqXOXzTlYj/cxkt02SC'),(1,'USER','user1','User1 Last1', 'user1@gmail.com','$2y$10$rdHxuOIi49G74HPIZTUMOOX/Iea1mNxCesqb6NxREKIHV1TcheGdO'),(2,'USER','user2','User2 Last2', 'user2@gmail.com','$2y$10$JbzsnZBVXRzvPEvwVxHNJuc3YTlidD0zGCFI0wtZ/l0/4gGr3NQty'),(3,'VNDR','vendor1','Vendor1 Last3','vendor1@example.com','$2y$10$wos2siprb2EDau7Ei2IK1.6/ywXd/Rz1f96L8fzr8KrEFCRTy7/aG'),(4,'VNDR','vendor2','Vendor2 Last4','vendor2@gmail.com','$2y$10$8j2CAK.S2rS0VLHAd4ss6uUWCW15ypQldk1pdTCVc/M5ZjADiPMci'),(5,'ORG','event_org1','Organization 1','evorg1@gmail.com','$2y$10$JHL.ts2pfdk.NkNzMLoVJeeGmfe6IPQqJnkcDpnG0ZlNoaHjkqWV.'),(6,'ORG','event_org2','Organization 2', 'evorg2@yahoo.com','$2y$10$UC5LsSKCVFMER9zBpudmj.n4awkIBqmJx7RfTOFl0CN7qWZO68W4q');
 
 
 -- Table structure for table `request`
@@ -35,7 +35,7 @@ CREATE TABLE request (
 );
 
 -- Dumping data for table `request`
-INSERT INTO request VALUES (1,4,1,'birthday party for a 6 yo',NULL,'2023-06-04 04:30:00',0),(6,1,6,'quick planning',NULL,'2023-05-24 12:30:00',-1),(9,1,8,'open summer wedding planning',NULL,'2024-06-25 10:35:00',1);
+INSERT INTO request VALUES (1,1,3,'birthday party for a 6 yo',NULL,'2023-06-04 04:30:00',0),(2,2,4,'open summer wedding planning',NULL,'2024-06-25 10:35:00',1);
 
 
 -- Table structure for table `service`
@@ -52,7 +52,7 @@ CREATE TABLE service (
 );
 
 -- Dumping data for table `service`
-INSERT INTO service VALUES (1,8,'birthday party organization','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam luctus finibus turpis, a eleifend ante laoreet vitae. Morbi in purus a lectus faucibus sagittis. In sed aliquam libero, ut fermentum augue. Proin vitae lacus mollis, porta felis ac, fringilla sapien.',75),(2,8,'wedding organization',NULL,500),(3,9,'wedding organizers',NULL,840),(4,6,'prom party organization','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc sodales accumsan magna.',470);
+INSERT INTO service VALUES (1,3,'birthday party organization','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam luctus finibus turpis, a eleifend ante laoreet vitae. Morbi in purus a lectus faucibus sagittis. In sed aliquam libero, ut fermentum augue. Proin vitae lacus mollis, porta felis ac, fringilla sapien.',75),(2,4,'wedding organization',NULL,500);
 
 
 -- Table structure for table `service_tag`

@@ -1,12 +1,10 @@
 <?php
 
-<<<<<<< HEAD
 $postPhotosPath = '../photos/posts';
 $servicePhotosPath = '../photos/services';
 $acceptedImageTypes = ['png', 'jpg', 'jpeg'];
-=======
+
 require_once __DIR__ . '/errors.php';
->>>>>>> api_rewrite
 
 /**
  * Check if date matches the MYSQL pattern: if not, adds an error to the class errors
@@ -15,18 +13,10 @@ require_once __DIR__ . '/errors.php';
  * @return string
  */
 function validateDate($date) {
-<<<<<<< HEAD
     if(!$date || !preg_match('\d{4}-\d{2}-\d{2} \d{2}-\d{2}-\d{2}'))
         return 'Invalid date (Accepted values: YYYY-MM-DD HH-MM-SS)';
-=======
-    if(!$date)
-        return 'Required value';
-
-    if(!preg_match_all("/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/", $date))
-        return 'Invalid date (Accepted values: YYYY-MM-DD HH:MM:SS)';
     
     return null;
->>>>>>> api_rewrite
 }
 
 /**
@@ -40,12 +30,6 @@ function getURIparam($paramIndex) {
     return $pathParts[$paramIndex];
 }
 
-<<<<<<< HEAD
-function exitError($code, $message) {
-    http_response_code($code);
-    echo json_encode(array("error" => $message));
-    exit();
-=======
 function readRequestBody() {
     $body = file_get_contents('php://input');
 
@@ -59,5 +43,35 @@ function readRequestBody() {
         parse_str($body, $data);
         return $data;
     }
->>>>>>> api_rewrite
+}
+
+function loadEnv($file) {
+    $env = [];
+    if (file_exists($file)) {
+        $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($lines as $line) {
+            if (strpos(trim($line), '#') === 0) {
+                continue;
+            }
+
+            list($key, $value) = explode('=', $line, 2);
+            $key = trim($key);
+            $value = trim($value);
+
+            if (!getenv($key)) {
+                putenv("$key=$value");
+                $env[$key] = $value;
+            }
+        }
+    }
+    return $env;
+}
+
+function base64UrlEncode($data) {
+    return str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($data));
+}
+
+function base64UrlDecode($data) {
+    $paddedData = str_pad($data, strlen($data) % 4, '=', STR_PAD_RIGHT);
+    return base64_decode(str_replace(['-', '_'], ['+', '/'], $paddedData));
 }

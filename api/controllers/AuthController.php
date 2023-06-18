@@ -1,47 +1,83 @@
 <?php
-    require_once __DIR__ . '/../models/User';
 
-    class AuthController {
-        private $output = array('STATUS' => null, 'ERRORS' => [], 'BODY' => []);
+require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/SessionController.php';
 
-        public function register() {
-            switch($_SERVER['REQUEST_METHOD']) {
-                case 'GET':
-                    $output['STATUS'] = 405;
-                    return $output;
-                case 'POST':
-                    $username = $_POST['username'];
-                    $email = $_POST['email'];
-                    $userType = $_POST['user_type'];
-                    $password = $_POST['password'];
-                    $confirmPassword = $_POST['confirm_password'];
+class AuthController {
 
-                    if(!$username || !$email || !$userType || !$password || !$confirmPassword) {
-                        if(!$username)
-                            $output['ERRORS']['username'] = 'Username is required';
-                        
-                        if(!$email)
-                            $output['ERRORS']['email'] = 'Email is required';
-                        
-                        if(!$userType)
-                            $output['ERRORS']['user_type'] = 'User type is required';
+    // get token from Bearer or Cookie
+    private static function getToken() {
+        $token = null;
+        $headers = getallheaders();
+        if (isset($headers['Authorization'])) {
+            // check if bearer and get token
+            $authHeader = $headers['Authorization'];
+            if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+                $token = $matches[1];
+            }
+        } else if (isset($_COOKIE['token'])) {
+            $token = $_COOKIE['token'];
+        }
+        return $token;
+    }
 
-                        if(!$password)
-                            $output['ERRORS']['password'] = 'Password is required';
-                        
-                        if(!$confirmPassword)
-                            $output['ERRORS']['confirm_password'] = 'Confirm password is required';
-                    }
-
-                    if(strlen($username) < 3 || strlen($username) > 40)
-                        $output['ERRORS']['username'] = 'Invalid username format (3-40 characters)';
-                    
-                    if(preg_match('[!/\@#$%^*()]', $username))
-                        $output['ERRORS']['username'] = 'Invalid username format (a-z, A-Z, 0-9,)';
-
-                    if(!filter_var($email, FILTER_VALIDATE_EMAIL))
-                        $output['ERRORS']['email'] = 'Invalid email format';
-
+    public static function getUser() {
+        $token = self::getToken();
+        if ($token) {
+            $payload = SessionController::verifyJwtToken($token);
+            if ($payload) {
+                $user_id = (int)$payload['user_id'];
+                $user = User::get($user_id);
+                if ($user) {
+                    return $user;
+                }
             }
         }
+        return null;
     }
+
+    public static function getUserType() {
+        $user = self::getUser();
+        if ($user) {
+            return $user['user_type'];
+        }
+        return null;
+    }
+
+    public static function requireUserType($allowed = []) {
+        if (in_array(null, $allowed)) {
+            return;
+        }
+
+        $logged_in = self::getUserType();
+        if ($logged_in == UserType::ADMIN->value) {
+            return;
+        }
+        
+        if (!$logged_in) {
+            exitError(401, "Unauthorized");
+        }
+        
+        if (!in_array($logged_in, $allowed)) {
+            exitError(403, "Forbidden");
+        }
+    }
+
+    public static function requireUser($allowed) {
+        $user = self::getUser();
+        $user_type = $user['user_type'] ?? null;
+        $user_id = $user['user_id'] ?? null;
+
+        if ($user_type == UserType::ADMIN->value) {
+            return;
+        }
+
+        if (!$user) {
+            exitError(401, "Unauthorized");
+        }
+
+        if ($user_id != $allowed) {
+            exitError(403, "Forbidden");
+        }
+    }
+}

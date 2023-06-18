@@ -18,11 +18,6 @@ require_once __DIR__ . '/../utils/utils.php';
 
 class EventController implements IController {
     private static $errors;
-<<<<<<< HEAD
-
-    private function __construct() {}
-
-=======
     private static $data;
     
     private function __construct() {}
@@ -31,7 +26,6 @@ class EventController implements IController {
         self::$data = readRequestBody();
     }
 
->>>>>>> api_rewrite
     public static function getAllBy($limitQueries = null) {
         try {
             http_response_code(200);
@@ -61,8 +55,14 @@ class EventController implements IController {
 
     public static function get() {
         try {
+            $event_id = (int) getURIparam(2);
+            $event = Event::get($event_id);
+            if ($event === false) {
+                exitError(404, "Event with id $event_id does not exist");
+            }
+
             http_response_code(200);
-            return Event::get((int) getURIparam(2));
+            return $event;
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
         }
@@ -72,19 +72,11 @@ class EventController implements IController {
      * Add vendor for event with specified ID in the URI 
      */
     public static function insertVendorFor() {
-<<<<<<< HEAD
-        if(!isset($_POST['vendor_id']))
-            exitError(400, 'Vendor ID is required');
-
-        try {
-            Event::insertVendor(['event_id' => (int) getURIparam(2), 'vendor_id' => $_POST['vendor_id']]);
-=======
         if(!isset(self::$data['vendor_id']))
             exitError(400, 'Vendor ID is required');
 
         try {
             Event::insertVendor(['event_id' => (int) getURIparam(2), 'vendor_id' => self::$data['vendor_id']]);
->>>>>>> api_rewrite
             http_response_code(201);
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
@@ -96,20 +88,6 @@ class EventController implements IController {
      */
     public static function create() {
         self::$errors = [];
-<<<<<<< HEAD
-        self::validateTitle($_POST['title']);
-
-        if(!$_POST['requester_id'])
-            self::$errors['requester_id'] = 'Invalid requester ID (required value)';
-        
-        if(!$_POST['organizer_id'])
-            self::$errors['organizer_id'] = 'Invalid organizer ID (required value)';
-
-        if(!$_POST['scheduled_date'])
-            self::$errors['scheduled_date'] = 'Invalid schedule date (required value)';
-
-        $errorDate = validateDate($_POST['scheduled_date']);
-=======
         self::validateTitle(self::$data['title']);
 
         if(!self::$data['requester_id'])
@@ -122,7 +100,6 @@ class EventController implements IController {
             self::$errors['scheduled_date'] = 'Invalid schedule date (required value)';
 
         $errorDate = validateDate(self::$data['scheduled_date']);
->>>>>>> api_rewrite
 
         if($errorDate)
             self::$errors['scheduled_date'] = $errorDate;
@@ -131,20 +108,21 @@ class EventController implements IController {
             exitError(400, self::$errors);
         
         try {
-            Event::insert([
-<<<<<<< HEAD
-                'requester_id' => $_POST['requester_id'],
-                'organizer_id' => $_POST['organizer_id'],
-                'title' => $_POST['title'],
-                'scheduled_date' => $_POST['scheduled_date']
-=======
+            $event_id = Event::insert([
                 'requester_id' => self::$data['requester_id'],
                 'organizer_id' => self::$data['organizer_id'],
                 'title' => self::$data['title'],
                 'scheduled_date' => self::$data['scheduled_date']
->>>>>>> api_rewrite
             ]);
+
             http_response_code(201);
+
+            return [
+                "error" => 0,
+                "result" => [
+                    "id" => $event_id
+                ]
+            ];
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
         }
@@ -213,10 +191,6 @@ class EventController implements IController {
             && !array_diff_key($queries, array_flip(array('month', 'year'))) 
             && is_numeric($queries['month']) && is_numeric($queries['year']);
     }
-<<<<<<< HEAD
-}
-=======
 }
 
 EventController::__constructStatic();
->>>>>>> api_rewrite

@@ -5,6 +5,7 @@ require_once __DIR__ . '/helper_controllers/PhotoController.php';
 require_once __DIR__ . '/helper_controllers/TagController.php';
 require_once __DIR__ . '/../models/Service.php';
 require_once __DIR__ . '/../utils/utils.php';
+require_once __DIR__ . '/../controllers/AuthController.php';
 
 //TODO auth check
 
@@ -111,7 +112,11 @@ class ServiceController implements IController {
      */
     public static function get() {
         try {
-            $service = Service::get((int) getURIparam(2));
+            $service_id = (int) getURIparam(2);
+            $service = Service::get($service_id);
+            if ($service === false) {
+                exitError(404, "Service with id $service_id does not exist");
+            }
 
             //Get accompanying photos & tags
             $photos = self::$photoController->baseModel->getAllBy($service['service_id']);
@@ -134,6 +139,9 @@ class ServiceController implements IController {
      * Validate input data and, if no errors occur, perform insertion
      */
     public static function create() {
+        // Add event organizer too...?
+        AuthController::requireUserType([UserType::VENDOR->value]);
+
         self::$errors = [];
         
         //Error checking
@@ -163,7 +171,8 @@ class ServiceController implements IController {
             if(isset(self::$data['description']))
                 $input['description'] = self::$data['description'];
 
-            if(Service::insert($input)) {
+            $service_id = Service::insert($input);
+            if ($service_id !== false) {
                 $serviceID = Service::$baseModel->db->lastInsertId();
                 $photos = $_FILES['photos'];
 
@@ -183,6 +192,13 @@ class ServiceController implements IController {
                 }
 
                 http_response_code(201);
+
+                return [
+                    "error" => 0,
+                    "result" => [
+                        "id" => $service_id
+                    ]
+                ];
             } else
                 http_response_code(400);
         } catch(\Exception $ex) {
@@ -194,6 +210,14 @@ class ServiceController implements IController {
      * Validate the specified update data and, if no errors occur, perform update
      */
     public static function update() {
+        $serviceID = (int) getURIparam(2);
+        $service = Service::get($serviceID);
+        if ($service === false) {
+            exitError(404, "Service with id $serviceID does not exist");
+        }
+        $servicer_id = $service['servicer_id'];
+        AuthController::requireUser($servicer_id);
+
         self::$errors = [];
         //TODO fix for getting images
 
@@ -229,9 +253,6 @@ class ServiceController implements IController {
         if(self::$errors)
             exitError(400, self::$errors);
 
-
-        $serviceID = (int) getURIparam(2);
-
         //Perform update
         if(isset($update)) {
             try {
@@ -255,8 +276,16 @@ class ServiceController implements IController {
      * Delete specified service
      */
     public static function delete() {
+        $serviceID = (int) getURIparam(2);
+        $service = Service::get($serviceID);
+        if ($service === false) {
+            exitError(404, "Service with id $serviceID does not exist");
+        }
+        $servicer_id = $service['servicer_id'];
+        AuthController::requireUser($servicer_id);
+
         try {
-            Service::$baseModel->delete(['service_id' => (int) getURIparam(2)]);
+            Service::$baseModel->delete(['service_id' => $serviceID]);
             http_response_code(204);
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
