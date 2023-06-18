@@ -1,5 +1,9 @@
 <?php
 
+$postPhotosPath = '../photos/posts';
+$servicePhotosPath = '../photos/services';
+$acceptedImageTypes = ['png', 'jpg', 'jpeg'];
+
 require_once __DIR__ . '/errors.php';
 
 /**
@@ -9,11 +13,8 @@ require_once __DIR__ . '/errors.php';
  * @return string
  */
 function validateDate($date) {
-    if(!$date)
-        return 'Required value';
-
-    if(!preg_match_all("/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/", $date))
-        return 'Invalid date (Accepted values: YYYY-MM-DD HH:MM:SS)';
+    if(!$date || !preg_match('\d{4}-\d{2}-\d{2} \d{2}-\d{2}-\d{2}'))
+        return 'Invalid date (Accepted values: YYYY-MM-DD HH-MM-SS)';
     
     return null;
 }

@@ -23,6 +23,8 @@ class Service {
         }
     }
 
+<<<<<<< HEAD
+=======
     public static function getSearch($searchQuery, $limit = null, $offset = null) {
         $query = 'SELECT DISTINCT ' . self::$baseModel->tableName . '.* FROM ' . self::$baseModel->tableName
                 . ' INNER JOIN service_tag ON service_tag.service_id = ' . self::$baseModel->tableName . '.service_id'
@@ -45,6 +47,7 @@ class Service {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+>>>>>>> api_rewrite
     /**
      * Get all posts by specified servicer (optional pagination)
      * 
@@ -73,6 +76,8 @@ class Service {
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+<<<<<<< HEAD
+=======
 
     public static function insert(array $parameters) {
         try {
@@ -81,6 +86,7 @@ class Service {
             throw $ex;
         }
     }
+>>>>>>> api_rewrite
 }
 
 Service::__constructStatic();
