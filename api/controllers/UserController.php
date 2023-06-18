@@ -27,7 +27,7 @@ class UserController implements GenericController {
     }
 
     public static function getAll($limitQueries = null) {
-        AuthController::requireUserType([UserType::ADMIN]);
+        AuthController::requireUserType([UserType::ADMIN->value]);
 
         try {
             http_response_code(200);
