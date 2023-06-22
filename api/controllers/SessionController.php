@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/interfaces/GenericController.php';
-require_once __DIR__ . '/../models/Session.php';
+// require_once __DIR__ . '/../models/Session.php';
 require_once __DIR__ . '/../utils/SessionType.php';
 require_once __DIR__ . '/../utils/utils.php';
 require_once __DIR__ . '/../validators/UserValidator.php';

@@ -108,11 +108,7 @@ class BaseModel {
      * Insert new record
      * 
      * @param array $parameters: key-value input of columns and values
-<<<<<<< HEAD
-     * @return boolean
-=======
      * @return string|false
->>>>>>> api_rewrite
      */
     public function insert(array $parameters) {
         if(!$parameters)
@@ -134,17 +130,6 @@ class BaseModel {
         $query = rtrim($query, ', ');
         $queryValues = rtrim($queryValues, ', ');
         $query .= ') VALUES (' . $queryValues . ')';
-<<<<<<< HEAD
-
-        //Query execution
-        $stmt = $this->db->prepare($query);
-
-        foreach($insertValues as $field => $value)
-            $stmt->bindParam($field, $value);
-
-        try {
-            $stmt->execute();
-=======
         
         //Query execution
         $stmt = $this->db->prepare($query);
@@ -152,17 +137,12 @@ class BaseModel {
         try {
             $stmt->execute($insertValues);
             return $this->db->lastInsertId();
->>>>>>> api_rewrite
         } catch(PDOException $ex) {
             throw $ex;
         }
 
         $stmt->closeCursor();
-<<<<<<< HEAD
-        return true;
-=======
         return false;
->>>>>>> api_rewrite
     }
 
     /**
@@ -171,27 +151,17 @@ class BaseModel {
      * 
      * @param array $parameters:     key-value input of columns and values
      * @param string $servicerField: name of the servicer field in this table
-<<<<<<< HEAD
-     * @return boolean
-     */
-    protected function insertUserCheck(array $parameters, $servicerField) {
-=======
      * @return string|false
      */
     public function insertUserCheck(array $parameters, $servicerField) {
->>>>>>> api_rewrite
         if(!$parameters)
             throw new InvalidArgumentException("Insert parameters cannot be empty");
         
         $servicerType = $this->checkUserType($parameters[$servicerField]);
 
-<<<<<<< HEAD
-        if($servicerType != UserType::VENDOR || $servicerType != UserType::EVENT_ORGANIZER)
-=======
         if($servicerType === false)
             throw new InvalidArgumentException('User does not exist');
         if($servicerType != UserType::VENDOR->value && $servicerType != UserType::EVENT_ORGANIZER->value)
->>>>>>> api_rewrite
             throw new InvalidArgumentException('Servicer user has to be of servicer type');
 
         try {
@@ -203,11 +173,7 @@ class BaseModel {
         }
 
         $stmt->closeCursor();
-<<<<<<< HEAD
-        return true;
-=======
         return false;
->>>>>>> api_rewrite
     }
 
     /***
@@ -217,37 +183,18 @@ class BaseModel {
      * @param array $conditions: key-value input of columns and values specifying record(s) to be updated
      * @return boolean
      */
-<<<<<<< HEAD
-    protected function update(array $parameters, array $conditions) {
-=======
     public function update(array $parameters, array $conditions) {
->>>>>>> api_rewrite
         if(!$parameters || !$conditions)
             throw new InvalidArgumentException("Update parameters & conditions cannot be empty");
 
         //Query generation
-<<<<<<< HEAD
-        $query = "UPDATE $this->tableName SET " . generateQueryMappings($parameters, ',') . ' WHERE ' . generateQueryMappings($conditions, 'AND');
-
-=======
         $query = "UPDATE $this->tableName SET " . $this->generateQueryMappings($parameters, ',') . ' WHERE ' . $this->generateQueryMappings($conditions, 'AND');
         
->>>>>>> api_rewrite
         //Query execution
         $stmt = $this->db->prepare($query);
 
         foreach($parameters as $field => $value)
             if(in_array($field, $this->properties))
-<<<<<<< HEAD
-                $stmt->bindParam($field, $value);
-        
-        foreach($conditions as $field => $value)
-            if(in_array($field, $this->properties))
-                $stmt->bindParam($field, $value);
-        
-        try {
-            $stmt->execute();
-=======
                 $values[$field] = $value;
         
         foreach($conditions as $field => $value)
@@ -257,17 +204,12 @@ class BaseModel {
         try {
             $stmt->execute($values);
             return $stmt->rowCount() > 0;
->>>>>>> api_rewrite
         } catch(PDOException $ex) {
             throw $ex;
         }
 
         $stmt->closeCursor();
-<<<<<<< HEAD
-        return true;
-=======
         return false;
->>>>>>> api_rewrite
     }
 
     /**
@@ -276,32 +218,17 @@ class BaseModel {
      * @param array $conditions: key-value pairs input of columns and values specifying record to be deleted
      * @return boolean 
      */
-<<<<<<< HEAD
-    protected function delete(array $conditions) {
-=======
     public function delete(array $conditions) {
->>>>>>> api_rewrite
         if(!$conditions)
             throw new InvalidArgumentException("Delete conditions cannot be empty");
         
         //Query generation
-<<<<<<< HEAD
-        $query = "DELETE FROM $this->tableName WHERE " . generateQueryMappings($conditions, 'AND');
-=======
         $query = "DELETE FROM $this->tableName WHERE " . $this->generateQueryMappings($conditions, 'AND');
->>>>>>> api_rewrite
 
         //Query execution
         $stmt = $this->db->prepare($query);
 
         foreach($conditions as $field => $value)
-<<<<<<< HEAD
-            if(in_array($field, $conditions))
-                $stmt->bindParam($field, $value);
-        
-        try {
-            $stmt->execute();
-=======
             if(in_array($field, $this->properties))
                 $stmt->bindParam($field, $value);
         
@@ -309,17 +236,12 @@ class BaseModel {
         try {
             $stmt->execute();
             return $stmt->rowCount() > 0;
->>>>>>> api_rewrite
         } catch(PDOException $ex) {
             throw $ex;
         }
 
         $stmt->closeCursor();
-<<<<<<< HEAD
-        return true;
-=======
         return false;
->>>>>>> api_rewrite
     }
 
 
@@ -328,11 +250,7 @@ class BaseModel {
     /**
      * Gets the user type of the specified user
      * @param integer $userId: the specified user's ID
-<<<<<<< HEAD
-     * @return string
-=======
      * @return string|false
->>>>>>> api_rewrite
      */
     public function checkUserType($userId) {
         $stmt = $this->db->prepare('SELECT user_type FROM user WHERE user_id = :user_id');
@@ -345,11 +263,7 @@ class BaseModel {
         }
 
         $userType = $stmt->fetch(PDO::FETCH_ASSOC);
-<<<<<<< HEAD
-        return $userType['user_type'];
-=======
         return $userType ? $userType['user_type'] : false;
->>>>>>> api_rewrite
     }
 
     /**

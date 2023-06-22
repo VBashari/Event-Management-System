@@ -1,10 +1,11 @@
 <?php
 
+require_once __DIR__ . '/AuthController.php';
+require_once __DIR__ . '/../utils/UserType.php';
+
 require_once __DIR__ . '/interfaces/IController.php';
 require_once __DIR__ . '/../models/Event.php';
 require_once __DIR__ . '/../utils/utils.php';
-
-//TODO auth check
 
 /**
  * Endpoints:
@@ -27,6 +28,9 @@ class EventController implements IController {
     }
 
     public static function getAllBy($limitQueries = null) {
+        AuthController::requireUserType([UserType::ADMIN->value, UserType::USER->value,
+                                        UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]);
+
         try {
             http_response_code(200);
             return Event::getAllBy((int) getURIparam(3), $limitQueries['limit'] ?? null, $limitQueries['offset'] ?? null);
@@ -36,6 +40,9 @@ class EventController implements IController {
     }
 
     public static function getMonthlyAllBy($timeQueries) {
+        AuthController::requireUserType([UserType::ADMIN->value, UserType::USER->value,
+                                        UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]);
+
         try {
             http_response_code(200);
             return Event::getMonthlyAllBy((int) getURIparam(3), $timeQueries['month'], $timeQueries['year']);
@@ -45,6 +52,8 @@ class EventController implements IController {
     }
 
     public static function getAll($limitQueries = null) {
+        AuthController::requireUserType([UserType::ADMIN->value]);
+
         try {
             http_response_code(200);
             return Event::getAll($limitQueries['limit'] ?? null, $limitQueries['offset'] ?? null);
@@ -54,6 +63,9 @@ class EventController implements IController {
     }
 
     public static function get() {
+        AuthController::requireUserType([UserType::ADMIN->value, UserType::USER->value,
+                                        UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]);
+
         try {
             $event_id = (int) getURIparam(2);
             $event = Event::get($event_id);
@@ -72,11 +84,22 @@ class EventController implements IController {
      * Add vendor for event with specified ID in the URI 
      */
     public static function insertVendorFor() {
+        $eventID = (int) getURIparam(2);
+
+        if(AuthController::getUserType() != UserType::ADMIN->value) {
+            AuthController::requireUserType([UserType::EVENT_ORGANIZER->value]);
+
+            $eventOwnerID = Post::get($eventID)['organizer_id'];
+            AuthController::requireUser($eventOwnerID);
+        }
+        else
+            AuthController::requireUserType([UserType::ADMIN->value]);
+
         if(!isset(self::$data['vendor_id']))
             exitError(400, 'Vendor ID is required');
 
         try {
-            Event::insertVendor(['event_id' => (int) getURIparam(2), 'vendor_id' => self::$data['vendor_id']]);
+            Event::insertVendor(['event_id' => $eventID, 'vendor_id' => self::$data['vendor_id']]);
             http_response_code(201);
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
@@ -87,6 +110,8 @@ class EventController implements IController {
      * Validate input data and, if no errors occur, perform insertion
      */
     public static function create() {
+        AuthController::requireUserType([UserType::ADMIN->value, UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]);
+
         self::$errors = [];
         self::validateTitle(self::$data['title']);
 
@@ -132,6 +157,17 @@ class EventController implements IController {
      * Validate the specified update data and, if no errors occur, perform update
      */
     public static function update() {
+        $eventID = (int) getURIparam(2);
+
+        if(AuthController::getUserType() != UserType::ADMIN->value) {
+            AuthController::requireUserType([UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]);
+
+            $eventOwnerID = Post::get($eventID)['organizer_id'];
+            AuthController::requireUser($eventOwnerID);
+        }
+        else
+            AuthController::requireUserType([UserType::ADMIN->value]);
+
         self::$errors = [];
 
         if($_REQUEST['title']) {
@@ -151,7 +187,7 @@ class EventController implements IController {
             exitError(400, self::$errors);
         
         try {
-            Event::$baseModel->update($update ?? null, ['event_id' => (int) getURIparam(2)]);
+            Event::$baseModel->update($update ?? null, ['event_id' => $eventID]);
             http_response_code(200);
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
@@ -159,8 +195,19 @@ class EventController implements IController {
     }
 
     public static function delete() {
+        $eventID = (int) getURIparam(2);
+
+        if(AuthController::getUserType() != UserType::ADMIN->value) {
+            AuthController::requireUserType([UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]);
+
+            $eventOwnerID = Post::get($eventID)['organizer_id'];
+            AuthController::requireUser($eventOwnerID);
+        }
+        else
+            AuthController::requireUserType([UserType::ADMIN->value]);
+
         try {
-            Event::$baseModel->delete(['event_id' => (int) getURIparam(2)]);
+            Event::$baseModel->delete(['event_id' => $eventID]);
             http_response_code(204);
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());

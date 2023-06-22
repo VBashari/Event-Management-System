@@ -1,5 +1,8 @@
 <?php
 
+require_once __DIR__ . '/AuthController.php';
+require_once __DIR__ . '/../utils/UserType.php';
+
 require_once __DIR__ . '/interfaces/IController.php';
 require_once __DIR__ . '/../models/Request.php';
 require_once __DIR__ . '/../utils/utils.php';
@@ -31,9 +34,16 @@ class RequestController implements IController {
      * Get all requests from specified user in URI (optional pagination)
      */
     public static function getAllBy($limitQueries = null) {
+        $userID = (int) getURIparam(3);
+
+        if(AuthController::getUserType() != UserType::ADMIN->value)
+            AuthController::requireUser($userID);
+        else
+            AuthController::requireUserType([UserType::ADMIN->value]);
+
         try {
             http_response_code(200);
-            return Request::getAllBy((int) getURIparam(3), $limitQueries['limit'] ?? null, $limitQueries['offset'] ?? null);
+            return Request::getAllBy($userID, $limitQueries['limit'] ?? null, $limitQueries['offset'] ?? null);
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
         }
@@ -43,9 +53,17 @@ class RequestController implements IController {
      * Get all requests for specified user (servicer of request) in URI (optional pagination)
      */
     public static function getAllUndeclinedFor($limitQueries = null) {
+        $userID = (int) getURIparam(3);
+
+        if(AuthController::getUserType() != UserType::ADMIN->value) {
+            AuthController::requireUserType([UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]);
+            AuthController::requireUser($userID);
+        } else
+            AuthController::requireUserType([UserType::ADMIN->value]);
+
         try {
             http_response_code(200);
-            return Request::getAllUndeclinedFor((int) getURIparam(3), $limitQueries['limit'] ?? null, $limitQueries['offset'] ?? null);
+            return Request::getAllUndeclinedFor($userID, $limitQueries['limit'] ?? null, $limitQueries['offset'] ?? null);
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
         }
@@ -55,6 +73,8 @@ class RequestController implements IController {
      * Get all requests (optional pagination)
      */
     public static function getAll($limitQueries = null) {
+        AuthController::requireUserType([UserType::ADMIN->value]);
+
         try {
             http_response_code(200);
             return Request::getAll($limitQueries['limit'] ?? null, $limitQueries['offset'] ?? null);
@@ -67,6 +87,9 @@ class RequestController implements IController {
      * Get request with specified id in URI
      */
     public static function get() {
+        AuthController::requireUserType([UserType::ADMIN->value, UserType::USER->value,
+                                        UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]);
+
         try{
             $request_id = (int) getURIparam(2);
             $request = Request::get($request_id);
@@ -85,6 +108,7 @@ class RequestController implements IController {
      * Validate input data and, if no errors occur, perform insertion
      */
     public static function create() {
+        AuthController::requireUserType([UserType::ADMIN->value, UserType::USER->value, UserType::EVENT_ORGANIZER->value]);
         self::$errors = [];
 
         if(!isset(self::$data['requester_id']))
@@ -144,7 +168,17 @@ class RequestController implements IController {
      * Validate update data and, if no errors occur, perform update
      */
     public static function update() {
+        $requestID = (int) getURIparam(2);
         self::$errors = [];
+
+        if(AuthController::getUserType() != UserType::ADMIN->value) {
+            AuthController::requireUserType([UserType::USER->value, UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]);
+            
+            $request =  Post::get($eventID);
+            $userID = (AuthController::getUserType() == UserType::USER->value) ? $request['requester_id'] : $request['servicer_id'];
+            AuthController::requireUser($userID);
+        } else
+            AuthController::requireUserType([UserType::ADMIN->value]);
 
         //Data validation
         if(isset(self::$data['title'])) {
@@ -176,7 +210,7 @@ class RequestController implements IController {
         //Perform update
         try {
             if(isset($update)) {
-                Request::$baseModel->update($update, ['request_id' => (int) getURIparam(2)]);
+                Request::$baseModel->update($update, ['request_id' => $requestID]);
                 http_response_code(200);
             } else
                 exitError(400, 'Update parameters cannot be empty');
@@ -189,9 +223,20 @@ class RequestController implements IController {
     }
 
     public static function delete() {
+        $requestID = (int) getURIparam(2);
+
+        if(AuthController::getUserType() != UserType::ADMIN->value) {
+            AuthController::requireUserType([UserType::USER->value, UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]);
+            
+            $request =  Post::get($eventID);
+            $userID = (AuthController::getUserType() == UserType::USER->value) ? $request['requester_id'] : $request['servicer_id'];
+            AuthController::requireUser($userID);
+        } else
+            AuthController::requireUserType([UserType::ADMIN->value]);
+
         try {
             http_response_code(204);
-            Request::delete((int) getURIparam(2));
+            Request::delete($requestID);
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
         }
