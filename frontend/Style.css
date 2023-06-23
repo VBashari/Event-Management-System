@@ -9,5 +9,5 @@
 /* navigation bar */
 nav { background-color: var(--palette-blue); }
 
-a[href="../login.html"] { color: white; }
-a[href="../signup.html"] { color: #292F36; }
+#login { color: white; }
+#signup { color: #292F36; }
