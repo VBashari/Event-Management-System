@@ -1,7 +1,3 @@
-function configureNavBar() {
-    //TODO
-}
-
 async function configureDashboardSidebar(userID) {
     const user = await getUser(userID);
     const sidebar = document.querySelector('.SideBar');
@@ -27,12 +23,12 @@ function getUser(userID) {
 
         request.onreadystatechange = function () {
             if (this.readyState === 4) {
-                if (this.status === 200) {           
+                if (this.status === 200)         
                     resolve(JSON.parse(this.response));
-                } else if(this.status === 400) {
-                    window.location.replace("404.html");
-                } else
-                    window.location.replace("500.html");
+                // } else if(this.status === 400) {
+                //     window.location.replace("404.html");
+                // } else
+                //     window.location.replace("500.html");
             } 
         }
 

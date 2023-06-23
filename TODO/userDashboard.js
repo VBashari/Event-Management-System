@@ -16,13 +16,13 @@ function getEvents() {
 
     request.onreadystatechange = function () {
         if (this.readyState === 4) {
-            if (this.status === 200) {           
+            if (this.status === 200)       
                 formatEvents(JSON.parse(this.response));
-            } else if(this.status === 400) {
-                window.location.replace("404.html");
-            } else
-                window.location.replace("500.html");
-        } 
+            // } else if(this.status === 400) {
+            //     window.location.replace("404.html");
+            // } else
+            //     window.location.replace("500.html");
+        }
     }
 
     request.send();

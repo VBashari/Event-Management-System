@@ -1,0 +1,16 @@
+#sidebar { 
+    background-color: white;
+    width: 20em;
+}
+
+#sidebar a { 
+    color: white;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+
+#sidebar-links { background-color: var(--palette-black); }
+#sidebar-links a:hover { color: var(--palette-blue); }
+
+#creation-links { background-color: var(--palette-blue); }
+#creation-links a:hover { color: var(--palette-black); }
