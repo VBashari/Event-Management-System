@@ -30,6 +30,11 @@ class SessionController  {
     }
 
     public static function verifyJwtToken($token) {
+        $dotCount = substr_count($token, '.');
+        if ($dotCount !== 2) {
+            return null;
+        }
+
         list($header, $payload, $signature) = explode('.', $token);
         
         $header = json_decode(base64UrlDecode($header), true);
