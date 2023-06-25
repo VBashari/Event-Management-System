@@ -51,11 +51,11 @@ $user = AuthController::getUser();
                     </li>
                 <?php else: ?>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-dark font-weight-bold mx-3 px-5" href="signup.html">Sign up</a>
+                        <a class="nav-link btn btn-dark font-weight-bold mx-3 px-5" href="./signup.html">Sign up</a>
                     </li>
         
                     <li class="nav-item">
-                        <a class="nav-link btn btn-outline-dark font-weight-bold px-5" href="login.html">Log in</a>
+                        <a class="nav-link btn btn-outline-dark font-weight-bold px-5" href="./login.html">Log in</a>
                     </li>
                 <?php endif; ?>
                 </ul>
@@ -68,15 +68,13 @@ $user = AuthController::getUser();
         <div class="m-auto w-50">
             <h1 id="title" class="text-center font-weight-bold">We make event planning <span class="font-weight-normal font-italic">easy</span></h1>
 
-            <form method="GET" action="" class="d-flex">
-                <input class="form-control form-control-lg rounded-pill" type="search" placeholder="What event are you hosting?" aria-label="Search">
+            <form method="GET" action="./frontend/service_search.php" class="d-flex">
+                <input name="q" class="form-control form-control-lg rounded-pill" type="search" placeholder="What event are you hosting?" aria-label="Search">
                 
                 <span class="input-group-append">
                     <button class="btn rounded-pill border-0 font-weight-bold ml-n5 px-5" type="submit">Submit</button>
                 </span>
             </form>
         </div>
-        
-        
     </body>
 </html>

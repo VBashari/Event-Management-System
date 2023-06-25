@@ -74,9 +74,6 @@ class PostController implements IController {
     }
 
     public static function getAllBy($limitQueries = null) {
-        AuthController::requireUserType([UserType::ADMIN->value, UserType::USER->value,
-                                        UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]);
-
         try {
             $posts = Post::getAllBy((int) getURIparam(3), $limitQueries['limit'] ?? null, $limitQueries['offset'] ?? null);
 
@@ -103,7 +100,7 @@ class PostController implements IController {
     public static function create() {
         AuthController::requireUserType([UserType::ADMIN->value, UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]);
         self::$errors = [];
-
+        
         if(!isset(self::$data['servicer_id']))
             self::$errors['servicer_id'] = 'Required value';
             
@@ -138,7 +135,7 @@ class PostController implements IController {
                         "id" => $post_id
                     ]
                 ];
-            }else
+            } else
                 exitError(400, 'The post couldn\'t be uploaded');
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
@@ -175,8 +172,7 @@ class PostController implements IController {
 
             if(self::$photoController->errors)
                 self::$errors = array_merge(self::$errors, self::$photoController->errors);
-        } else
-            self::$errors['photos'] = 'Photos are required for posts';
+        }
 
         if(self::$errors)
             exitError(400, self::$errors);

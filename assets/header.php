@@ -3,13 +3,13 @@ $user = require_once __DIR__ . '/../auth.php';
 ?>
 
 <nav class="navbar navbar-expand-lg">
-    <a id="homepage" class="navbar-brand ml-4" href="/">
+    <a id="homepage" class="navbar-brand ml-4" href="../index.php">
         <img src="../photos/frontend/logo.png" alt="Logo" width="80">
     </a>
 
     <div class="col-8">
-        <form method="GET" action="" class="form-inline">
-            <input class="form-control rounded-pill col-8" type="search" placeholder="Find vendors and event organizers" aria-label="Search">
+        <form method="GET" action="../service_search.php" class="form-inline">
+            <input class="form-control rounded-pill col-8" name="q" type="text" placeholder="Find vendors and event organizers" aria-label="Search">
             
             <span class="input-group-append">
                 <button class="btn rounded-pill border-0 ml-n5" type="submit">

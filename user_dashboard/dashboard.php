@@ -41,21 +41,11 @@ if (!$user) {
                 <h2 class="mb-0">Month_name</h2>
                 <p class="font-italic">Here are your events for the month:</p>
 
-                <!-- Event element -->
-                <div class="event row d-flex align-items-center m-4 p-2" data-id="event-id">
-                    <i class="fa fa-calendar fa-2x col-auto" ></i>
-                    
-                    <div class="text-center">
-                        <h5 class="mb-0 pl-0">DD-MM-YYYY</h5>
-                        <p class="my-0">HH:MM:SS</p>
-                    </div>
-                    
-                    <div class="col-auto ml-4">
-                       <p class="m-0 font-weight-bold">Event title</p>
-                       <p class="m-0 font-italic">Organizer: organizer_username</p> 
-                    </div>
-                </div>
+                <!-- Event elements go here -->
             </div>
         </div>
+
+        <script src="../scripts/utility.js"></script>
+        <script src="../scripts/dashboard.js"></script>
     </body>
 </html>

@@ -127,7 +127,7 @@ class PhotoController {
      */
     private function validatePhotoType($photoName) {
         //Check for image type
-        if(!in_array(pathinfo($photoName, PATHINFO_EXTENSION), self::$acceptedImageTypes))
+        if(!in_array(strtolower(pathinfo($photoName, PATHINFO_EXTENSION)), self::$acceptedImageTypes))
             $this->errors['photos'] = 'Invalid photo type (Accepted types: PNG, JPG/JPEG';
     }
 

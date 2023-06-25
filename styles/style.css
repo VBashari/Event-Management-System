@@ -4,6 +4,8 @@
     --palette-grey: #E3E4E5;
 }
 
+.card { width: 20em; }
+
 .db-content { min-height: 90vh; }
 
 /* navigation bar */

@@ -1,0 +1,29 @@
+body { background-color: var(--palette-grey); }
+
+#content {
+    background-color: white;
+    padding-left: 10em;
+    padding-right: 10em;
+}
+
+#service { gap: 3em; }
+
+.card-img {
+    object-fit: cover;
+    max-width: 600px;
+    min-width: 400px;
+}
+
+.carousel {
+    width: 600px;
+}
+
+#send-req {
+    background-color: var(--palette-blue);
+    color: white;
+}
+
+#more {
+    color: lightslategrey;
+    border: 1px solid var(--palette-blue);
+}
