@@ -13,7 +13,7 @@
         <div class="d-flex">
             <?php include_once __DIR__ . "/assets/sidebar.html"; ?>
             <div class="db-content m-5 p-3 w-70 h-100">
-                <h2>Sent Requests</h2>
+                <h2>My Requests</h2>
                 <div class="card p-3 m-2" style="width: 75rem;">
                     <div class="card-body">
                         <h5 class="card-title"><b>Request to:</b> ServerviceUsername</h5>
