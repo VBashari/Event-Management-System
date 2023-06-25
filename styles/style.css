@@ -9,5 +9,5 @@
 /* navigation bar */
 nav { background-color: var(--palette-blue); }
 
-#login { color: white; }
-#signup { color: #292F36; }
+#login:hover, #signup:hover, #profile:hover { color: white; }
+#signup, #profile, #login { color: #292F36; }

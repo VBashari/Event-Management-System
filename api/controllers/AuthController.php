@@ -15,8 +15,8 @@ class AuthController {
             if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
                 $token = $matches[1];
             }
-        } else if (isset($_COOKIE['token'])) {
-            $token = $_COOKIE['token'];
+        } else if (isset($_COOKIE['session'])) {
+            $token = $_COOKIE['session'];
         }
         return $token;
     }

@@ -8,9 +8,9 @@ function handleException($exception) {
     http_response_code(500);
 
     echo json_encode([
-        "error" => 1,
+        "error" => 500,
         "code" => $exception->getCode(),
-        "message" => $exception->getMessage(),
+        "result" => $exception->getMessage(),
         "file" => $exception->getFile(),
         "line" => $exception->getLine()
     ]);
@@ -20,7 +20,7 @@ function respondError($code, $message) {
     http_response_code($code);
     echo json_encode([
         "error" => $code,
-        "message" => $message
+        "result" => $message
     ]);
 }
 

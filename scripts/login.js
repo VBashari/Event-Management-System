@@ -11,7 +11,7 @@ function tryLogin(username, password) {
         resetGenericError(form);
 
         document.cookie = `session=${response.result.token}; path=/; expires=${new Date(response.result.expiration * 1000).toUTCString()}`;
-        document.location = '/index.html';
+        document.location = '/';
     }, genericErrorHandler);
 }
 
@@ -21,5 +21,5 @@ function isLoggedIn() {
 
 function signOut() {
     document.cookie = 'session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    document.location = '/login.html';
+    document.location = '/';
 }

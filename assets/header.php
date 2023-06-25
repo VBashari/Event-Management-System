@@ -1,6 +1,10 @@
+<?php
+$user = require_once __DIR__ . '/../auth.php';
+?>
+
 <nav class="navbar navbar-expand-lg">
-    <a id="homepage" class="navbar-brand ml-4" href="../homepage.html">
-        <img src="/photos/frontend/logo.png" alt="Logo" width="80">
+    <a id="homepage" class="navbar-brand ml-4" href="/">
+        <img src="../photos/frontend/logo.png" alt="Logo" width="80">
     </a>
 
     <div class="col-8">
@@ -19,9 +23,21 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     
-    <!-- Change to "my profile" link if logged in-->
+    <!-- TODO: Make these buttons consistent with home page? -->
     <div class="collapse navbar-collapse d-flex flex-row-reverse mx-5" id="navbarSupportedContent">
         <ul class="nav navbar-nav">
+        <?php if ($user !== null): ?>
+            <li class="nav-item dropdown">
+                <a id="profile" class="nav-link dropdown-toggle font-weight-bold mx-3 px-5" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-user"></i>&nbsp;&nbsp;My Profile
+                </a>
+                <div class="dropdown-menu" aria-labelledby="profileDropdown">
+                    <a class="dropdown-item" href="dashboard.php">Dashboard</a>
+                    <a class="dropdown-item" href="../edit_profile.php">Edit Profile</a>
+                    <a class="dropdown-item" href="/" onclick="signOut();">Sign out</a>
+                </div>
+            </li>
+        <?php else: ?>
             <li class="nav-item">
                 <a id="signup" class="nav-link font-weight-bold mx-5" href="../signup.html">Sign up</a>
             </li>
@@ -29,6 +45,7 @@
             <li class="nav-item">
                 <a id="login" class="nav-link" href="../login.html">Log in</a>
             </li>
+        <?php endif; ?>
         </ul>
     </div>
 </nav>
