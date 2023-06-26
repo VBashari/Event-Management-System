@@ -4,7 +4,7 @@ document.getElementById('post-form').addEventListener('submit', (e) => {
     e.preventDefault();
 
     const request = new XMLHttpRequest();
-    request.open('POST', `../../../api/posts`);
+    request.open('POST', `../api/posts`);
 
     request.onreadystatechange = function() {
         if (this.readyState === 4) {

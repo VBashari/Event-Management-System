@@ -52,7 +52,7 @@ class RequestController implements IController {
     /**
      * Get all requests for specified user (servicer of request) in URI (optional pagination)
      */
-    public static function getAllUndeclinedFor($limitQueries = null) {
+    public static function getAllUnevaluatedFor($limitQueries = null) {
         $userID = (int) getURIparam(3);
 
         if(AuthController::getUserType() != UserType::ADMIN->value) {
@@ -63,7 +63,7 @@ class RequestController implements IController {
 
         try {
             http_response_code(200);
-            return Request::getAllUndeclinedFor($userID, $limitQueries['limit'] ?? null, $limitQueries['offset'] ?? null);
+            return Request::getAllUnevaluatedFor($userID, $limitQueries['limit'] ?? null, $limitQueries['offset'] ?? null);
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
         }

@@ -21,19 +21,19 @@ function showElements(method, api_url, funcFormatElements, elementsContainer) {
     })
 }
 
-async function nextBtnFunc(btn, prevBtn, elements_div, func) {
+async function nextBtnFunc(btn, prevBtn, elements_div, outputFunc) {
     elements_div.innerHTML = '';
-    await func();
+    await outputFunc();
     prevBtn.disabled = false;
     
-    if(document.querySelectorAll('.fa').length > 1)
+    if(document.querySelectorAll('.fa-inbox').length)
         btn.disabled = true;
 }
 
-function prevBtnFunc(offset, btn, nextBtn, elements_div, func) {
+function prevBtnFunc(offset, btn, nextBtn, elements_div, outputFunc) {
     elements_div.innerHTML = '';
     nextBtn.disabled = false;
-    func();
+    outputFunc();
 
     if(offset == 0)
         btn.disabled = true;

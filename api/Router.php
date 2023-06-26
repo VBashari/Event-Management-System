@@ -121,7 +121,7 @@ Router::addBaseController('PostController', 'posts');
 Router::addBaseController('EventController', 'events');
 Router::addGenericController('UserController', 'users');
 
-Router::addGET('/^\/api\/requests\/user\/\d+\/incoming(\?limit=\d+?&offset=\d+)?$/', 'RequestController', 'getAllUndeclinedFor');
+Router::addGET('/^\/api\/requests\/user\/\d+\/incoming(\?limit=\d+?&offset=\d+)?$/', 'RequestController', 'getAllUnevaluatedFor');
 Router::addGET('/^\/api\/events\/user\/\d+\?month=\d+&year=\d+$/', 'EventController', 'getMonthlyAllBy');
 Router::addGET('/^\/api\/users\?type=(user|servicer)(&limit=\d+?&offset=\d+)?$/', 'UserController', 'getAllByType');
 

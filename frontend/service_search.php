@@ -4,6 +4,7 @@
         <title>Home</title>
         <link rel="stylesheet" href="../styles/style.css">
         <link rel="stylesheet" href="../styles/sidebar.css">
+        <link rel="stylesheet" href="../styles/service_rectangular.css">
         
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
         <link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.2/css/font-awesome.css" rel="stylesheet"  type='text/css'>
@@ -13,18 +14,6 @@
 
         <style>
             body { background-color: var(--palette-grey); }
-
-            .badge-pill { 
-                background-color: rgba(78, 205, 196, 0.4);
-                color: rgba(41, 47, 54, 0.6);
-            }
-
-            .crop-img {
-                object-fit: cover;
-                object-position: center;
-                width: 300px;
-                max-height: 250px;
-            }
         </style>
     </head>
     <body>

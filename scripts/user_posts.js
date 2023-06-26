@@ -101,7 +101,7 @@ function getPost(postID) {
 
 function submitEdit(elementID, postTitle) {
     const request = new XMLHttpRequest();
-    request.open('PATCH', `../../../api/posts/${elementID}`);
+    request.open('PATCH', `../api/posts/${elementID}`);
 
     request.onreadystatechange = function() {
         if (this.readyState === 4) {

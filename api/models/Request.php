@@ -105,14 +105,14 @@ class Request {
      * @param integer $offset
      * @return array query results
      */
-    public static function getAllUndeclinedFor($userID, $limit = null, $offset = null) {
+    public static function getAllUnevaluatedFor($userID, $limit = null, $offset = null) {
         if(self::$baseModel->checkUserType($userID) == UserType::USER->value)
             throw new InvalidArgumentException('User types cannot have incoming requests');
 
         $query = 'SELECT ' . self::$baseModel->tableName . '.*, user.username as requester_username'
                 . ' FROM ' . self::$baseModel->tableName
                 . ' INNER JOIN user ON user.user_id = ' . self::$baseModel->tableName . '.requester_id'
-                . ' WHERE servicer_id = ? AND status != -1';
+                . ' WHERE servicer_id = ? AND status = 0';
         $bindings = [$userID];
 
         if(isset($limit) && isset($offset)) {

@@ -11,7 +11,7 @@ const no_image = {photo_reference: '../frontend/no_image.jpg', alt_text: 'No ima
 const urlParams = new URLSearchParams(window.location.search);
 const searchQuery = urlParams.get('q');
 
-const showServices = () => showElements('GET', `../../../api/services?q=${searchQuery}&limit=${limit}&offset=${offset}`, formatResults, list_div);
+const showServices = () => showElements('GET', `../api/services?q=${searchQuery}&limit=${limit}&offset=${offset}`, formatResults, list_div);
 
 document.querySelector("form[method='get']").action = '';
 showServices();
@@ -35,7 +35,6 @@ function formatResults(result) {
 
     result.forEach(service => {
         const primaryPhoto = 'photos' in service ? service.photos[0] : no_image;
-        const description = service.description === null ? 'No description provided' : service.description;
 
         // Create tags div
         if('tags' in service) {
