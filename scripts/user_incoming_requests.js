@@ -43,8 +43,8 @@ function formatRequests(result) {
                     
                     ${request.status == 1 ? '' :
                         `<div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-success mx-2" data-id="${request.request_id}" onclick="evaluateRequest(this.dataset.id, true)">Accept</button>
-                            <button type="button" class="btn btn-danger" data-id="${request.request_id}" onclick="evaluateRequest(this.dataset.id, false)">Deny</button>
+                            <button type="button" class="btn btn-success mx-2" data-id="${request.request_id}" data-requester-id="${request.requester_id}" onclick="evaluateRequest(this, true, convertToEvent)">Accept</button>
+                            <button type="button" class="btn btn-danger" data-id="${request.request_id}" onclick="evaluateRequest(this, false)">Deny</button>
                         </div>`}
                 </div>
             </div>`;
@@ -53,19 +53,29 @@ function formatRequests(result) {
     })
 }
 
-function evaluateRequest(elementID, isAccepted) {
+function evaluateRequest(element, isAccepted, successFunction = null) {
     const request = new XMLHttpRequest();
-    request.open('PATCH', `../api/requests/${elementID}`);
+    request.open('PATCH', `../api/requests/${element.dataset.id}`);
 
     request.onreadystatechange = function() {
         if (this.readyState === 4) {
-            if (this.status === 200)
-                document.getElementById(`request${elementID}`).remove();
-            else
+            if (this.status === 200){
+                if(successFunction != null) 
+                    successFunction(element.dataset.id, element.dataset.requesterId);
+                
+                document.getElementById(`request${element.dataset.id}`).remove();
+            } else
                 alert('Something went wrong. Try again in a few minutes.');
         }
     }
 
     if(confirm(`Are you sure you want to ${isAccepted ? 'accept' : 'reject'} this request?`))
         request.send(`status=${isAccepted ? 1 : -1}`);
+}
+
+function convertToEvent(requesterID, title, scheduled_date) {
+    const request = new XMLHttpRequest();
+    request.open('POST', `../api/events`);
+
+    request.send(`requester_id=${requesterID}&organizer_id=${userID}&title=${title}&scheduled_date=${scheduled_date}`);
 }
