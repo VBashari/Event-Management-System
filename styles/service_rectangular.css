@@ -1,0 +1,11 @@
+.badge-pill { 
+    background-color: rgba(78, 205, 196, 0.4);
+    color: rgba(41, 47, 54, 0.6);
+}
+
+.crop-img {
+    object-fit: cover;
+    object-position: center;
+    width: 300px;
+    max-height: 250px;
+}
