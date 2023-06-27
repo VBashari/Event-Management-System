@@ -6,8 +6,6 @@ require_once __DIR__ . '/../validators/UserValidator.php';
 require_once __DIR__ . '/../utils/utils.php';
 require_once __DIR__ . '/../controllers/AuthController.php';
 
-//TODO add auth check
-
 /**
  * Endpoints:
  *      GET POST        users

@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../utils/utils.php';
+
 class Connector extends PDO {
     private static $instance;
 
@@ -11,6 +13,8 @@ class Connector extends PDO {
     }
 
     private final function __construct() {
+        loadEnv(__DIR__ . '/../.env');
+
         $dsn = 'mysql:host=' . getenv('DBHOST') . ';dbname=' . getenv('DBNAME');
         parent::__construct($dsn, getenv('DBUSER'), getenv('DBPASS'));
 

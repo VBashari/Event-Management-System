@@ -13,16 +13,16 @@ CREATE TABLE user (
 
 -- Dumping data for table `user`
 INSERT INTO user (user_type, username, full_name, email, password) VALUES 
-('USER',  'user1',          'Zaid Turner',        'user1@gmail.com',      'Userpass1'),
-('USER',  'user2',          'Summer Burns',       'user2@gmail.com',      'Userpass2'),
-('USER',  'user3',          'Rob Huffman',        'user3@gmail.com',      'Userpass2'),
-('VNDR',  'vendor1',        'Elin Owens',         'vendor1@example.com',  'Vendorpass1'),
-('VNDR',  'vendor2',        'Peter Hartley',      'vendor2@gmail.com',    'Vendorpass2'),
-('VNDR',  'Elegant Events', 'Edward Carrillo',    'vendor3@gmail.com',    'Vendorpass3'),
-('ORG',   'event_org1',     'Kabir Wiggins',      'evorg1@gmail.com',     'Eorgpass1'),
-('ORG',   'event_org2',     'Sebastien Summers',  'evorg2@yahoo.com',     'Eorgpass2'),
-('ORG',   'Glamour Galas',  'Alastair Norman',    'evorg3@yahoo.com',     'Eorgpass3'),
-('ADMN',  'admin',          'Theo Foley',         'admin@example.com',    'Adminpass1');
+('USER',  'user1',          'Zaid Turner',        'user1@gmail.com',      '$2y$10$WGCBoXmDi6nKsbrrWwVdYuRxlWxYV5yaNNSFAs9R5OTYIWdZnC6zi'),
+('USER',  'user2',          'Summer Burns',       'user2@gmail.com',      '$2y$10$0b8qruyTAYHUOGvtXULlC.TSElXHXgrp46nHmzKYObrY/NBaN2Icq'),
+('USER',  'user3',          'Rob Huffman',        'user3@gmail.com',      '$2y$10$DPj.miJgcWKyq9FBef3L2uASMNfn9BfVhluNQKqOgJWWOJgGxF17i'),
+('VNDR',  'vendor1',        'Elin Owens',         'vendor1@example.com',  '$2y$10$CH2symXRm11dMFiKzMQzqOU17T9jpXHI5WidRwCPp6iwfn0Qjy4N2'),
+('VNDR',  'vendor2',        'Peter Hartley',      'vendor2@example.com',    '$2y$10$bdc1u88cbcEuMjf8rcVF3O0nakixzXVcQggwEO0/M0nt1rQtdDL1G'),
+('VNDR',  'ElegantEvents', 'Edward Carrillo',    'vendor3@example.com',    '$2y$10$IDsplHsCCpcyPRZ48AX7h.rNSMN6omu24Tdbnz.rFTtNRBb0c4vbu'),
+('ORG',   'event_org1',     'Kabir Wiggins',      'evorg1@gmail.com',     '$2y$10$2199UOLa6taP5c9Dlh0dXe4UrabKhTe6nXjEo4n8QJJIwibfnHBFG'),
+('ORG',   'event_org2',     'Sebastien Summers',  'evorg2@yahoo.com',     '$2y$10$hvT/PPmzGcnb94oHrf/OneD00Jch.Kd/GUyEoj7bcMK33lojMkRui'),
+('ORG',   'GlamourGalas',  'Alastair Norman',    'evorg3@yahoo.com',     '$2y$10$THydLDVJYMmkYNaxeRCq8uEMWMlJ2Y0MBXL8HOJpHCWFQyaRRVErS'),
+('ADMN',  'admin',          'Theo Foley',         'admin@example.com',    '$2y$10$bwApbmT.iTjhQyZ30gUp/eFRs9fKlL4kKioDD2lRInpQ2uUrUiXGy');
 
 
 -- Table structure for table `request`
@@ -172,7 +172,7 @@ CREATE TABLE event (
 
 -- Dumping data for table `event`
 INSERT INTO event (requester_id, organizer_id, title, scheduled_date) VALUES 
-(1,4,'Open summer wedding planning','2024-06-25 10:35:00'),
+(1,4,'Open summer wedding planning','2024-06-25 11:35:00'),
 
 (1,5,'Fall Theme wedding venue','2023-06-15 10:35:00'),
 (2,5,'Birthday party','2023-06-20 10:00:00'),

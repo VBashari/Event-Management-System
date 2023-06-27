@@ -7,8 +7,6 @@ require_once __DIR__ . '/../models/Service.php';
 require_once __DIR__ . '/../utils/utils.php';
 require_once __DIR__ . '/../controllers/AuthController.php';
 
-//TODO auth check
-
 /**
  * Endpoints:
  *      GET POST        services
@@ -227,7 +225,6 @@ class ServiceController implements IController {
         AuthController::requireUser($servicer_id);
 
         self::$errors = [];
-        //TODO fix for getting images
 
         //Error checking
         if(!self::$data)

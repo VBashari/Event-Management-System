@@ -97,11 +97,10 @@ class BaseModel {
 
         try {
             $stmt->execute(array($recordId));
+            return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch(PDOException $ex) {
             throw $ex;
         }
-
-        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     /**

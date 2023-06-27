@@ -8,8 +8,6 @@ require_once __DIR__ . '/helper_controllers/PhotoController.php';
 require_once __DIR__ . '/../models/Post.php';
 require_once __DIR__ . '/../utils/utils.php';
 
-//TODO auth check
-
 /**
  * Endpoints:
  *      GET POST        posts
@@ -152,8 +150,6 @@ class PostController implements IController {
         $postID = (int) getURIparam(2);
 
         if(AuthController::getUserType() != UserType::ADMIN->value) {
-            AuthController::requireUserType([UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]);
-
             $postOwnerID = Post::get($postID)['servicer_id'];
             AuthController::requireUser($postOwnerID);
         }
@@ -195,8 +191,6 @@ class PostController implements IController {
         $postID = (int) getURIparam(2);
 
         if(AuthController::getUserType() != UserType::ADMIN->value) {
-            AuthController::requireUserType([UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]);
-
             $postOwnerID = Post::get($postID)['servicer_id'];
             AuthController::requireUser($postOwnerID);
         }

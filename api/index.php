@@ -4,7 +4,7 @@ require_once __DIR__ . '/utils/utils.php';
 require_once __DIR__ . '/utils/errors.php';
 
 // load sensitive info
-loadEnv(".env");
+loadEnv(__DIR__ . '/.env');
 
 // convert unhandled errors or exceptions to JSON
 set_error_handler("handleError");

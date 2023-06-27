@@ -7,8 +7,6 @@ require_once __DIR__ . '/interfaces/IController.php';
 require_once __DIR__ . '/../models/Request.php';
 require_once __DIR__ . '/../utils/utils.php';
 
-//TODO auth check
-
 /**
  * Endpoints:
  *      GET POST        requests
@@ -55,10 +53,9 @@ class RequestController implements IController {
     public static function getAllUnevaluatedFor($limitQueries = null) {
         $userID = (int) getURIparam(3);
 
-        if(AuthController::getUserType() != UserType::ADMIN->value) {
-            AuthController::requireUserType([UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]);
+        if(AuthController::getUserType() != UserType::ADMIN->value)
             AuthController::requireUser($userID);
-        } else
+        else
             AuthController::requireUserType([UserType::ADMIN->value]);
 
         try {
@@ -172,10 +169,9 @@ class RequestController implements IController {
         self::$errors = [];
 
         if(AuthController::getUserType() != UserType::ADMIN->value) {
-            AuthController::requireUserType([UserType::USER->value, UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]);
-            
-            $request =  Post::get($eventID);
+            $request =  Request::get($requestID);
             $userID = (AuthController::getUserType() == UserType::USER->value) ? $request['requester_id'] : $request['servicer_id'];
+
             AuthController::requireUser($userID);
         } else
             AuthController::requireUserType([UserType::ADMIN->value]);
@@ -228,7 +224,7 @@ class RequestController implements IController {
         if(AuthController::getUserType() != UserType::ADMIN->value) {
             AuthController::requireUserType([UserType::USER->value, UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]);
             
-            $request =  Post::get($eventID);
+            $request =  Request::get($requestID);
             $userID = (AuthController::getUserType() == UserType::USER->value) ? $request['requester_id'] : $request['servicer_id'];
             AuthController::requireUser($userID);
         } else
