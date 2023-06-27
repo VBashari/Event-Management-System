@@ -42,7 +42,7 @@ function formatRequests(result) {
                     
                     ${request.status == 1 ? '' :
                         `<div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-success mx-2" data-id="${request.request_id}" data-requester-id="${request.requester_id}" onclick="evaluateRequest(this, true, convertToEvent)">Accept</button>
+                            <button type="button" class="btn btn-success mx-2" data-id="${request.request_id}" data-requester-id="${request.requester_id}" data-title="${request.title}" data-scheduled-date="${request.scheduled_date}" onclick="evaluateRequest(this, true, convertToEvent)">Accept</button>
                             <button type="button" class="btn btn-danger" data-id="${request.request_id}" onclick="evaluateRequest(this, false)">Deny</button>
                         </div>`}
                 </div>
@@ -60,7 +60,7 @@ function evaluateRequest(element, isAccepted, successFunction = null) {
         if (this.readyState === 4) {
             if (this.status === 200){
                 if(successFunction != null) 
-                    successFunction(element.dataset.id, element.dataset.requesterId);
+                    successFunction(element.dataset.requesterId, element.dataset.title, element.dataset.scheduledDate);
                 
                 document.getElementById(`request${element.dataset.id}`).remove();
             } else
@@ -75,6 +75,6 @@ function evaluateRequest(element, isAccepted, successFunction = null) {
 function convertToEvent(requesterID, title, scheduled_date) {
     const request = new XMLHttpRequest();
     request.open('POST', `../api/events`);
-
+    
     request.send(`requester_id=${requesterID}&organizer_id=${userID}&title=${title}&scheduled_date=${scheduled_date}`);
 }
