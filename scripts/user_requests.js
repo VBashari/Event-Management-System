@@ -35,7 +35,7 @@ function formatRequests(result) {
         const format =
             `<div id="request${request.request_id}" class="p-5 m-3" style="background-color: white;">
                 <div>
-                    <h5><b>Request to:</b> ServerviceUsername</h5>
+                    <h5><b>Request to:</b> <span class="servicer-name-${request.servicer_id}"></span></h5>
                     <h6 class="font-weight-bold">${request.title} <span class="font-weight-normal"> | ${date.toDateString()} (${date.toLocaleTimeString()})</span></h6>
                     <p>${request.description == null ? '' : request.description}</p>
                     
@@ -52,6 +52,11 @@ function formatRequests(result) {
             </div>`;
         
         content_div.insertAdjacentHTML('beforeend', format);
+        
+        httpRequest("GET", `../../../api/users/${request.servicer_id}`, null, (result) => {
+            const servicers = document.querySelectorAll(`.servicer-name-${request.servicer_id}`);
+            servicers.forEach(servicer => servicer.innerText = result.full_name);
+        }, (error) => {});
     })
 }
 

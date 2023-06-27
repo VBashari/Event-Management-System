@@ -103,7 +103,7 @@ class UserController implements GenericController {
             }
 
             $logged_user = AuthController::getUser();
-            if (($logged_user['user_id'] ?? null) != $user['user_id']) {
+            if ($logged_user['user_type'] != UserType::ADMIN->value && ($logged_user['user_id'] ?? null) != $user['user_id']) {
                 unset($user['email']);
                 unset($user['username']);
             }

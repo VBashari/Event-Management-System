@@ -184,12 +184,8 @@ class PostController implements IController {
     public static function delete() {
         $postID = (int) getURIparam(2);
 
-        if(AuthController::getUserType() != UserType::ADMIN->value) {
-            $postOwnerID = Post::get($postID)['servicer_id'];
-            AuthController::requireUser($postOwnerID);
-        }
-        else
-            AuthController::requireUserType([UserType::ADMIN->value]);
+        $postOwnerID = Post::get($postID)['servicer_id'];
+        AuthController::requireUser($postOwnerID);
 
         try {
             Post::$baseModel->delete(['post_id' => $postID]);
