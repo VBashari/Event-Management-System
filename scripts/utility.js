@@ -1,5 +1,5 @@
 function showElements(method, api_url, funcFormatElements, elementsContainer) {
-    return new Promise(function(resolve) {
+    return new Promise(function(resolve, reject) {
         const request = new XMLHttpRequest();
         request.open(method, api_url);
     

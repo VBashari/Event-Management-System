@@ -32,8 +32,6 @@ class PostController implements IController {
     }
 
     public static function get() {
-        AuthController::requireUserType([UserType::ADMIN->value, UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]);
-
         try {
             $post_id = (int) getURIparam(2);
             $post = Post::get($post_id);
@@ -54,8 +52,6 @@ class PostController implements IController {
     }
 
     public static function getAll($limitQueries = null) {
-        AuthController::requireUserType([UserType::ADMIN->value]);
-
         try {
             $posts = Post::$baseModel->getAll($limitQueries['limit'] ?? null, $limitQueries['offset'] ?? null);
 
@@ -151,12 +147,8 @@ class PostController implements IController {
     public static function update() {
         $postID = (int) getURIparam(2);
 
-        if(AuthController::getUserType() != UserType::ADMIN->value) {
-            $postOwnerID = Post::get($postID)['servicer_id'];
-            AuthController::requireUser($postOwnerID);
-        }
-        else
-            AuthController::requireUserType([UserType::ADMIN->value]);
+        $postOwnerID = Post::get($postID)['servicer_id'];
+        AuthController::requireUser($postOwnerID);
 
         self::$errors = [];
 

@@ -209,16 +209,6 @@ class ServiceController implements IController {
      */
     public static function update() {
         $serviceID = (int) getURIparam(2);
-        
-        if(AuthController::getUserType() != UserType::ADMIN->value) {
-            AuthController::requireUserType([UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]);
-
-            $servicerID = Service::get($serviceID)['servicer_id'];
-            AuthController::requireUser($servicerID);
-        }
-        else
-            AuthController::requireUserType([UserType::ADMIN->value]);
-
         $service = Service::get($serviceID);
         if ($service === false) {
             exitError(404, "Service with id $serviceID does not exist");
@@ -285,14 +275,6 @@ class ServiceController implements IController {
     public static function delete() {
         $serviceID = (int) getURIparam(2);
         $service = Service::get($serviceID);
-
-        if(AuthController::getUserType() != UserType::ADMIN->value) {
-            AuthController::requireUserType([UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]);
-            AuthController::requireUser($service['servicer_id']);
-        }
-        else
-            AuthController::requireUserType([UserType::ADMIN->value]);
-
         if ($service === false) {
             exitError(404, "Service with id $serviceID does not exist");
         }

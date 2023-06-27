@@ -9,6 +9,11 @@ const servicerId = urlParams.get('id');
 
 const showServices = () => showElements('GET', `../../../api/services/user/${servicerId}?limit=${limit}&offset=${offset}`, formatServices, services_div);
 
+httpRequest("GET", `../../../api/users/${servicerId}`, null, (result) => {
+    document.getElementById('servicer-name-h3').innerText = result.full_name;
+}, (error) => {});
+
+document.getElementById('servicer-posts-a').href = `./servicer_posts.php?id=${servicerId}`;
 
 document.querySelector('form[method="get"]').action = './service_search.php';
 showServices();

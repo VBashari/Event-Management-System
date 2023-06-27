@@ -24,7 +24,7 @@
         <?php include_once __DIR__ . "/../assets/header.php"; ?>
 
         <div class="container p-10 mt-5">
-            <h3 id="servicer-username-h3">Servicer username</h3>
+            <h3 id="servicer-name-h3"></h3>
             
             <button type="button" class="btn btn-link">Services</button>
             <button type="button" class="btn btn-link"><a id="servicer-posts-a" href="./servicer_posts.php" style="color:black;">Posts</a></button>
@@ -41,6 +41,7 @@
 
         <script>const userID = <?php echo $user['user_id']; ?></script>
         <script src="../scripts/utility.js"></script>
+        <script src="../scripts/ajax.js"></script>
         <script src="../scripts/servicer_services.js"></script>
         <script src="../scripts/login.js"></script>
     </body>

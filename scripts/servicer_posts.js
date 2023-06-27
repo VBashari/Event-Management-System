@@ -3,7 +3,17 @@ var offset = 0;
 
 const posts_div = document.getElementById('posts');
 const prevBtn = document.getElementById('prev'), nextBtn = document.getElementById('next');
-const showPosts = () => showElements('GET', `../../../api/posts/user/${userID}?limit=${limit}&offset=${offset}`, formatPosts, posts_div);
+
+const urlParams = new URLSearchParams(window.location.search);
+const servicerId = urlParams.get('id');
+
+const showPosts = () => showElements('GET', `../../../api/posts/user/${servicerId}?limit=${limit}&offset=${offset}`, formatPosts, posts_div);
+
+httpRequest("GET", `../../../api/users/${servicerId}`, null, (result) => {
+    document.getElementById('servicer-name-h3').innerText = result.full_name;
+}, (error) => {});
+
+document.getElementById('servicer-services-a').href = `./servicer_services.php?id=${servicerId}`;
 
 showPosts();
 
