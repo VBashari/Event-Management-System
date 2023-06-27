@@ -20,8 +20,8 @@ TRUNCATE TABLE service; TRUNCATE TABLE service_photo; TRUNCATE TABLE service_tag
 SET FOREIGN_KEY_CHECKS = 1;
 ```
 
-* In the `api` folder, rename the `.env_example` file to `.env`, and change its contents in accordance with the credentials of your database.
-* Relocate project to `htdocs` folder in your XAMPP folder
+* In the `api` folder, rename the `.env_example` file to `.env`, and change its contents in accordance with your database's credentials. (Do not modify the JWT key)
+* Relocate project to `htdocs` folder in your XAMPP folder.
 
 ## Running
 Make sure to start Apache and MySQL with the XAMPP control panel, and open the website with [localhost](http://localhost)
