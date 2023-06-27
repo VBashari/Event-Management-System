@@ -1,4 +1,3 @@
-const userID = 1; //TODO get logged in user's id
 const limit = 6;
 var offset = 0;
 

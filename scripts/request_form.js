@@ -1,5 +1,3 @@
-const userID = 1; //TODO get user id
-
 document.querySelector('form[method="POST"]').addEventListener('submit', (e) => {
     e.preventDefault();
 

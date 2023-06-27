@@ -34,7 +34,7 @@
         </div>
 
         <div class="d-flex">
-            <?php include_once __DIR__ . '/../assets/sidebar.html'; ?>
+            <?php include_once __DIR__ . '/../assets/sidebar.php'; ?>
 
             <div class="db-content m-5 p-3 w-75 h-100">
                 <h2>My posts</h2>
@@ -46,6 +46,7 @@
 
         </div>
 
+        <script>const userID = <?php echo $user['user_id']; ?></script>
         <script src="../scripts/utility.js"></script>
         <script src="../scripts/user_posts.js"></script>
     </body>

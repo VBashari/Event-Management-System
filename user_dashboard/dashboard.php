@@ -45,6 +45,7 @@ if (!$user) {
             </div>
         </div>
 
+        <script>const userID = <?php echo $user['user_id'] ?></script>
         <script src="../scripts/utility.js"></script>
         <script src="../scripts/dashboard.js"></script>
     </body>

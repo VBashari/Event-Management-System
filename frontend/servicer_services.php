@@ -21,7 +21,7 @@
         </style>
     </head>
     <body style="background-color:white;">
-        <?php include_once __DIR__ . "/assets/header.html"; ?>
+        <?php include_once __DIR__ . "/../assets/header.php"; ?>
 
         <div class="container p-10 mt-5">
             <h3>Servicer username</h3>
@@ -39,6 +39,7 @@
 
         </div>
 
+        <script>const userID = <?php echo $user['user_id']; ?></script>
         <script src="../scripts/utility.js"></script>
         <script src="../scripts/servicer_services.js"></script>
     </body>

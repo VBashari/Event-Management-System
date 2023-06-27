@@ -14,10 +14,14 @@ email: vendor1@example.com
 username: vendor1
 password: Vendorpass1
 
-email: vendor2@gmail.com
+email: vendor2@example.com
 username: vendor2
 password: Vendorpass2
 
 email: evorg1@gmail.com
 username: event_org1
 password: Eorgpass1
+
+email: evorg2@yahoo.com
+username: event_org2
+password: Eorgpass2

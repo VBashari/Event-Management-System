@@ -3,7 +3,7 @@ require_once __DIR__ . '/api/utils/utils.php';
 require_once __DIR__ . '/api/utils/errors.php';
 
 // load sensitive info
-loadEnv(".env");
+loadEnv(__DIR__ . '/api/.env');
 
 require_once __DIR__ . '/api/controllers/AuthController.php';
 
@@ -45,7 +45,6 @@ $user = AuthController::getUser();
                         </a>
                         <div class="dropdown-menu" aria-labelledby="profileDropdown">
                             <a class="dropdown-item" href="user_dashboard/dashboard.php">Dashboard</a>
-                            <a class="dropdown-item" href="edit_profile.php">Edit Profile</a>
                             <a class="dropdown-item" href="" onclick="signOut();">Sign out</a>
                         </div>
                     </li>

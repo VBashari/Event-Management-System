@@ -15,7 +15,7 @@ function formatPage(result) {
 
                 ${result.description === null ? '' : `<p>${result.description}</p>`}
                 
-                <form method="POST" action="./request_form.php">
+                <form method="POST" action="${isLoggedIn() ? './request_form.php' : '../login.html'}">
                     <button id="send-req" name="id" value="${result.servicer_id}" type="submit" class="float-right btn font-weight-bold px-4 py-2">Send request</button>
                 </form>
             </div>

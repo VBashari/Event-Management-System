@@ -1,4 +1,3 @@
-const userID = 8; // TODO get servicer's id from url
 const limit = 9;
 var offset = 0;
 

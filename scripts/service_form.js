@@ -1,5 +1,3 @@
-const userID = 8;
-
 document.getElementById('service-form').addEventListener('submit', (e) => {
     e.preventDefault();
 

@@ -35,6 +35,7 @@
             </div>
         </div>
 
+        <script>const userID = <?php echo $user['user_id']; ?></script>
         <script src="../scripts/utility.js"></script>
         <script src="../scripts/user_requests.js"></script>
     </body>

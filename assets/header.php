@@ -7,9 +7,9 @@ $user = require_once __DIR__ . '/../auth.php';
         <img src="../photos/frontend/logo.png" alt="Logo" width="80">
     </a>
 
-    <div class="col-8">
-        <form method="GET" action="../service_search.php" class="form-inline">
-            <input class="form-control rounded-pill col-8" name="q" type="text" placeholder="Find vendors and event organizers" aria-label="Search">
+    <div class="col-5">
+        <form method="GET" action="../frontend/service_search.php" class="form-inline">
+            <input class="form-control rounded-pill col-12" name="q" type="text" placeholder="Find vendors and event organizers" aria-label="Search">
             
             <span class="input-group-append">
                 <button class="btn rounded-pill border-0 ml-n5" type="submit">
@@ -23,7 +23,6 @@ $user = require_once __DIR__ . '/../auth.php';
         <span class="navbar-toggler-icon"></span>
     </button>
     
-    <!-- TODO: Make these buttons consistent with home page? -->
     <div class="collapse navbar-collapse d-flex flex-row-reverse mx-5" id="navbarSupportedContent">
         <ul class="nav navbar-nav">
         <?php if ($user !== null): ?>
@@ -33,7 +32,6 @@ $user = require_once __DIR__ . '/../auth.php';
                 </a>
                 <div class="dropdown-menu" aria-labelledby="profileDropdown">
                     <a class="dropdown-item" href="dashboard.php">Dashboard</a>
-                    <a class="dropdown-item" href="../edit_profile.php">Edit Profile</a>
                     <a class="dropdown-item" href="/" onclick="signOut();">Sign out</a>
                 </div>
             </li>

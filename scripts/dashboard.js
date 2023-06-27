@@ -1,5 +1,4 @@
 const events_div = document.getElementById('events');
-const userID = 1 // TODO Get logged-in user's ID
 
 const date = new Date();
 const month = ["January","February","March","April","May","June","July","August","September","October","November","December"];

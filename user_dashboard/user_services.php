@@ -13,13 +13,13 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
 
     </head>
-    <body style="background-color:lightgray;">
+    <body style="background-color:var(--palette-grey);">
         <?php include_once __DIR__ . "/../assets/header.php"; ?>
 
         <div class="d-flex">
             <?php include_once __DIR__ . "/../assets/sidebar.php"; ?>
 
-            <div class="m-5 p-3 w-75 h-100">
+            <div class="db-content m-5 p-3 w-75 h-100">
                 <h2>My Services</h2>
 
                 <!-- Services go here -->
@@ -32,6 +32,7 @@
             </div>
         </div>
 
+        <script>const userID = <?php echo $user['user_id']; ?></script>
         <script src="../scripts/utility.js"></script>
         <script src="../scripts/user_services.js"></script>
     </body>

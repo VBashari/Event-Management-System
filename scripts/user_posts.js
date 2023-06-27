@@ -1,5 +1,4 @@
 const api_baseURL = '../../../api/posts', postsPhotosFolderPath = '../../photos/posts';
-const userID = 8; //TODO get logged in user id
 
 const posts_div = document.getElementById('posts');
 const modal = document.getElementById('editForm-modal'), modalContent = document.querySelector('.modal-content');
