@@ -25,11 +25,24 @@ class UserController implements GenericController {
     }
 
     public static function getAll($limitQueries = null) {
-        AuthController::requireUserType([UserType::ADMIN->value]);
-
         try {
             http_response_code(200);
-            return User::getAll($limitQueries['limit'] ?? null, $limitQueries['offset'] ?? null);
+            $all_users = User::getAll($limitQueries['limit'] ?? null, $limitQueries['offset'] ?? null);
+            $logged_user = AuthController::getUser();
+            if (($logged_user['user_type'] ?? null) != UserType::ADMIN->value) {
+                for ($idx = 0; $idx < count($all_users); $idx++) {
+                    $user = $all_users[$idx];
+                    if (!in_array($user['user_type'], [UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]) && $user['user_id'] != ($logged_user['user_id'] ?? null)) {
+                        array_splice($all_users, $idx, 1);
+                        $idx--;
+                    }
+                    elseif ($user['user_id'] != ($logged_user['user_id'] ?? null)) {
+                        unset($all_users[$idx]['email']);
+                        unset($all_users[$idx]['username']);
+                    }
+                }
+            }
+            return $all_users;
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
         }
@@ -39,16 +52,32 @@ class UserController implements GenericController {
         try {
             $type = $queries['type'] ?? null;
             if ($type == 'user') {
-                AuthController::requireUserType([UserType::ADMIN->value]);
-
-                http_response_code(200);
-                return User::getAllUsers($queries['limit'] ?? null, $queries['offset'] ?? null);
+                $logged_user = AuthController::getUser();
+                if (!$logged_user) {
+                    exitError(401, "Unauthorized");
+                }
+                elseif ($logged_user['user_type'] == UserType::ADMIN->value) {
+                    http_response_code(200);
+                    return User::getAllUsers($queries['limit'] ?? null, $queries['offset'] ?? null);
+                }
+                else {
+                    http_response_code(200);
+                    return [$logged_user];
+                }
             }
             elseif ($type == 'servicer') {
-                AuthController::requireUserType([null]);
-
                 http_response_code(200);
-                return User::getAllServicers($queries['limit'] ?? null, $queries['offset'] ?? null);
+                $servicers = User::getAllServicers($queries['limit'] ?? null, $queries['offset'] ?? null);
+                $logged_user = AuthController::getUser();
+                if (($logged_user['user_type'] ?? null) != UserType::ADMIN->value) {
+                    foreach ($servicers as $key => $servicer) {
+                        if ($servicer['user_id'] != ($logged_user['user_id'] ?? null)) {
+                            unset($servicers[$key]['email']);
+                            unset($servicers[$key]['username']);
+                        }
+                    }
+                }
+                return $servicers;
             }
             else {
                 exitError(400, "Invalid user type");
@@ -61,11 +90,22 @@ class UserController implements GenericController {
     public static function get() {
         try {
             $user_id = (int) getURIparam(2);
-            AuthController::requireUser($user_id);
             
+            // if user doesn't exist don't tell that to the client
             $user = User::get($user_id);
+            if (!$user || !in_array($user['user_type'], [UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value])) {
+                AuthController::requireUser($user_id);
+            }
+
+            // should only happen if user is admin
             if ($user === false) {
                 exitError(404, "User with id $user_id does not exist");
+            }
+
+            $logged_user = AuthController::getUser();
+            if (($logged_user['user_id'] ?? null) != $user['user_id']) {
+                unset($user['email']);
+                unset($user['username']);
             }
 
             http_response_code(200);

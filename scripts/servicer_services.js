@@ -3,7 +3,11 @@ var offset = 0;
 
 const services_div = document.getElementById('services');
 const prevBtn = document.getElementById('prev'), nextBtn = document.getElementById('next');
-const showServices = () => showElements('GET', `../../../api/services/user/${userID}?limit=${limit}&offset=${offset}`, formatServices, services_div);
+
+const urlParams = new URLSearchParams(window.location.search);
+const servicerId = urlParams.get('id');
+
+const showServices = () => showElements('GET', `../../../api/services/user/${servicerId}?limit=${limit}&offset=${offset}`, formatServices, services_div);
 
 
 document.querySelector('form[method="get"]').action = './service_search.php';

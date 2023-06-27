@@ -24,10 +24,10 @@
         <?php include_once __DIR__ . "/../assets/header.php"; ?>
 
         <div class="container p-10 mt-5">
-            <h3>Servicer username</h3>
+            <h3 id="servicer-username-h3">Servicer username</h3>
             
             <button type="button" class="btn btn-link">Services</button>
-            <button type="button" class="btn btn-link"><a href="./servicer_posts.php" style="color:black;">Posts</a></button>
+            <button type="button" class="btn btn-link"><a id="servicer-posts-a" href="./servicer_posts.php" style="color:black;">Posts</a></button>
 
             <div id="services" class="d-flex flex-wrap"  style="gap:2em;" >
             </div>

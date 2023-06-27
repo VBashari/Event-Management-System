@@ -78,7 +78,7 @@ class User {
      * @return query results array
      */
     public static function getAllUsers($limit = null, $offset = null) {
-        $query = 'SELECT user_id, username, email FROM ' . self::$baseModel->tableName
+        $query = 'SELECT user_id, username, full_name, email FROM ' . self::$baseModel->tableName
                 . ' WHERE user_type = ?';
         $bindingArray = array(UserType::USER->value);
 
@@ -106,7 +106,7 @@ class User {
      * @return query results array
      */
     public static function getAllServicers($limit = null, $offset = null) {
-        $query = 'SELECT user_id, user_type, username, email FROM ' . self::$baseModel->tableName
+        $query = 'SELECT user_id, user_type, username, full_name, email FROM ' . self::$baseModel->tableName
                 . ' WHERE user_type = ? OR user_type = ?';
         $bindingArray = array(UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value);
 
