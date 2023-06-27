@@ -24,10 +24,17 @@ class Service {
     }
 
     public static function getSearch($searchQuery, $limit = null, $offset = null) {
-        $query = 'SELECT DISTINCT ' . self::$baseModel->tableName . '.* FROM ' . self::$baseModel->tableName
-                . ' INNER JOIN service_tag ON service_tag.service_id = ' . self::$baseModel->tableName . '.service_id'
-                . ' WHERE ' . self::$baseModel->tableName . '.title LIKE ? OR service_tag.tag LIKE ?';
-        $bindings = ["%$searchQuery%", "%$searchQuery%"];
+        $query = 'SELECT DISTINCT ' . self::$baseModel->tableName . '.* 
+              FROM ' . self::$baseModel->tableName . ' 
+              LEFT JOIN service_tag ON service_tag.service_id = ' . self::$baseModel->tableName . '.service_id 
+              WHERE ' . self::$baseModel->tableName . '.title LIKE ? OR service_tag.tag LIKE ? 
+              UNION 
+              SELECT DISTINCT ' . self::$baseModel->tableName . '.* 
+              FROM ' . self::$baseModel->tableName . ' 
+              RIGHT JOIN service_tag ON service_tag.service_id = ' . self::$baseModel->tableName . '.service_id 
+              WHERE ' . self::$baseModel->tableName . '.title LIKE ? OR service_tag.tag LIKE ?';
+    
+        $bindings = ["%$searchQuery%", "%$searchQuery%", "%$searchQuery%", "%$searchQuery%"];
 
         if(isset($limit) && isset($offset)) {
             $query .= ' LIMIT ? OFFSET ?';
