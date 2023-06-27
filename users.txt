@@ -10,6 +10,10 @@ email: user2@gmail.com
 username: user2
 password: Userpass2
 
+email: user3@gmail.com
+username: user3
+password: Userpass3
+
 email: vendor1@example.com
 username: vendor1
 password: Vendorpass1
@@ -18,6 +22,10 @@ email: vendor2@example.com
 username: vendor2
 password: Vendorpass2
 
+email: vendor3@example.com
+username: ElegantEvents
+password: Vendorpass3
+
 email: evorg1@gmail.com
 username: event_org1
 password: Eorgpass1
@@ -25,3 +33,7 @@ password: Eorgpass1
 email: evorg2@yahoo.com
 username: event_org2
 password: Eorgpass2
+
+email: evorg3@yahoo.com
+username: GlamourGalas
+password: Eorgpass3
