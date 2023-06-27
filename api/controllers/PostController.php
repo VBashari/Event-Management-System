@@ -157,7 +157,7 @@ class PostController implements IController {
             self::validateTitle($update['title']);
         }
 
-        if(isset(self::$files['photos'])) {
+        if(isset(self::$files['photos']) && !empty(self::$files['photos'])) {
             self::$photoController->validatePhotos(self::$files['photos']['name'] ?? null, self::$data['alt_texts'] ?? null, self::$data['captions'] ?? null);
 
             if(self::$photoController->errors)
@@ -175,7 +175,7 @@ class PostController implements IController {
             }
         }
 
-        if(isset(self::$files['photos']))
+        if(isset(self::$files['photos']) && !empty(self::$files['photos']))
             self::$photoController->updatePhotos($postID);
         
         http_response_code(200);
