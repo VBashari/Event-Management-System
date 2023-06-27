@@ -151,7 +151,7 @@ class Event {
      * @return array query results
      */
     private static function getAllByUser($userId, string $limiterQuery = null, array $limiterValues = null) {
-        $query = 'SELECT e.event_id, e.organizer_id, e.title, e.scheduled_date, user.username AS organizer_username FROM '
+        $query = 'SELECT e.event_id, e.organizer_id, e.title, e.scheduled_date, user.full_name AS organizer_fullname FROM '
                 . self::$baseModel->tableName . ' e'
                 . ' INNER JOIN user ON user.user_id = e.organizer_id WHERE e.requester_id = :user_id ' . $limiterQuery;
         $bindings = ['user_id' => $userId];

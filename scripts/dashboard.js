@@ -14,9 +14,17 @@ function formatEvents(result) {
         return;
     }
 
+    if(!Array.isArray(result)) {
+        result = result.org_events.concat(result.user_events);
+    }
+
     result.forEach(event => {
         const date_db = event.scheduled_date.split(/[- :]/);
         const date = new Date(Date.UTC(date_db[0], date_db[1]-1, date_db[2], date_db[3], date_db[4], date_db[5]));
+
+        if(!event.organizer_fullname) {
+            event.organizer_fullname = 'You';
+        }
 
         const event_el = `
             <div class="event row d-flex align-items-center m-4 p-2" data-id="${event.event_id}">
@@ -29,7 +37,7 @@ function formatEvents(result) {
                 
                 <div class="col-auto ml-4">
                     <p class="m-0 font-weight-bold">${event.title}</p>
-                    <p class="m-0 font-italic">Organizer: ${event.organizer_username}</p> 
+                    <p class="m-0 font-italic">Organizer: ${event.organizer_fullname}</p> 
                 </div>
             </div>`;
 

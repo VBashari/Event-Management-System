@@ -28,12 +28,13 @@ class EventController implements IController {
     }
 
     public static function getAllBy($limitQueries = null) {
-        AuthController::requireUserType([UserType::ADMIN->value, UserType::USER->value,
-                                        UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]);
+        $requesterID = (int) getURIparam(3);
+
+        AuthController::requireUser($requesterID);
 
         try {
             http_response_code(200);
-            return Event::getAllBy((int) getURIparam(3), $limitQueries['limit'] ?? null, $limitQueries['offset'] ?? null);
+            return Event::getAllBy($requesterID, $limitQueries['limit'] ?? null, $limitQueries['offset'] ?? null);
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
         }
@@ -63,12 +64,15 @@ class EventController implements IController {
     }
 
     public static function get() {
-        AuthController::requireUserType([UserType::ADMIN->value, UserType::USER->value,
-                                        UserType::VENDOR->value, UserType::EVENT_ORGANIZER->value]);
-
         try {
             $event_id = (int) getURIparam(2);
             $event = Event::get($event_id);
+            $logged_user = AuthController::getUser();
+
+            if (!$event || ($event['requester_id'] != $logged_user['user_id'] && $event['organizer_id'] != $logged_user['user_id'])) {
+                AuthController::requireUserType([UserType::ADMIN->value]);
+            }
+
             if ($event === false) {
                 exitError(404, "Event with id $event_id does not exist");
             }
