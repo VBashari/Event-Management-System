@@ -21,7 +21,7 @@ require_once __DIR__ . '/../utils/utils.php';
 class RequestController implements IController {
     private static $errors;
     private static $data;
-    
+
     private function __construct() {}
 
     public static function __constructStatic() {

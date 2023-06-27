@@ -22,12 +22,12 @@ document.querySelector('form[method="POST"]').addEventListener('submit', (e) => 
     formInput.append('servicer_id', document.querySelector('input[name="servicer_id"]').value);
 
     formInput.append('title', document.getElementById('title').value.trim());
-    formInput.append('date', document.getElementById('date').value + ' ' + document.getElementById('time').value + ':00');
+    formInput.append('scheduled_date', document.getElementById('date').value + ' ' + document.getElementById('time').value + ':00');
     
     const description = document.getElementById('description').value.trim();
     
     if(description != '')
         formInput.append('description', description);
 
-    request.send();
+    request.send(formInput);
 })

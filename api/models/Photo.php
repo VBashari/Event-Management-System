@@ -23,10 +23,7 @@ class Photo extends BaseModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getAllReferencesBy($recordId) {
-        if(self::$baseModel->checkUserType($parameters[$this->typeField . '_id']) == UserType::USER->value)
-            throw new InvalidArgumentException('User types cannot make posts');
-        
+    public function getAllReferencesBy($recordId) {        
         $stmt = $this->db->prepare("SELECT {$this->tableName}.photo_reference FROM {$this->tableName}"
                                 . " INNER JOIN {$this->typeField} ON {$this->typeField}.{$this->typeField}_id = {$this->tableName}.{$this->typeField}_id"
                                 . " WHERE {$this->typeField}.servicer_id = ?");

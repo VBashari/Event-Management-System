@@ -17,8 +17,8 @@
 
         <div id="content" class="my-5 py-5"></div>
 
-        <script src="../scripts/login.js"></script>
         <script src="../scripts/utility.js"></script>
         <script src="../scripts/service_view.js"></script>
+        <script src="../scripts/login.js"></script>
     </body>
 </html>

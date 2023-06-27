@@ -31,5 +31,6 @@
 
         <script src="../scripts/utility.js"></script>
         <script src="../scripts/service_search.js"></script>
+        <script src="../scripts/login.js"></script>
     </body>
 </html>

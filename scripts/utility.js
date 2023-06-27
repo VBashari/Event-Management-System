@@ -86,3 +86,20 @@ function errorOutput(element, errorMessage) {
     } else
         errorDiv.classList.add('invisible');
 }
+
+function readFileAsBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+    
+        reader.onload = () => {
+            const base64Data = reader.result.split(',')[1];
+            resolve(base64Data);
+        };
+    
+        reader.onerror = () => {
+            reject(new Error('Error reading file'));
+        };
+    
+        reader.readAsDataURL(file);
+    });
+}

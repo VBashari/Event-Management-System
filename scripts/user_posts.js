@@ -98,10 +98,10 @@ function getPost(postID) {
     });
 }
 
-function submitEdit(elementID, postTitle) {
+async function submitEdit(elementID, postTitle) {
     const request = new XMLHttpRequest();
     request.open('PATCH', `../api/posts/${elementID}`);
-
+    
     request.onreadystatechange = function() {
         if (this.readyState === 4) {
             if (this.status === 200)
@@ -113,13 +113,27 @@ function submitEdit(elementID, postTitle) {
 
     const newTitle = document.getElementById('title').value.trim();
     const photosInput = document.querySelector("input[type='file']");
-    var formInput= new FormData();
+    
+    var formInput = {};
     
     if(newTitle != postTitle)
-        formInput.append('title', newTitle);
+        formInput.title = newTitle;
 
-    for(var i = 0; i < photosInput.files.length; i++)
-        formInput.append('photos[]', photosInput.files[i]);
+    var files = [];
+
+    for (var i = 0; i < photosInput.files.length; i++) {
+        var file = photosInput.files[i];
+        var fileData = {};
+
+        fileData.data = await readFileAsBase64(file)
+        fileData.filename = file.name;
+      
+        files.push(fileData);
+    }
+
+    if (files.length > 0)
+        formInput.photos = files;
     
-    request.send(formInput);
+    request.setRequestHeader('Content-Type', 'application/json');
+    request.send(JSON.stringify(formInput));
 }

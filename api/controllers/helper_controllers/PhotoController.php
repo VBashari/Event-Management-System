@@ -11,10 +11,12 @@ class PhotoController {
     private $folderPath;
     private static $acceptedImageTypes = ['png', 'jpg', 'jpeg'];
 
-    public function __construct($typeIDField, $tableName, $folderPath) {
+    public function __construct($typeIDField, $tableName, $folderPath, $data = [], $files = []) {
         $this->baseModel = new Photo($typeIDField, $tableName);
         $this->typeIDField = $typeIDField;
         $this->folderPath = $folderPath;
+        $this->data = $data;
+        $this->files = $files;
     }
 
     /**
@@ -39,8 +41,22 @@ class PhotoController {
         } catch(\Exception $ex) {
             exitError(400, $ex->getMessage());
         }
+        
+        if (!file_exists($tmpName)) {
+            exitError(400, "File $tmpName does not exist");
+        }
 
-        move_uploaded_file($tmpName, __DIR__ . $this->folderPath . '/' . $fileName);
+        if (!preg_match('/^[a-zA-Z0-9-_\.]+$/', $fileName)) {
+            exitError(400, "Invalid file name $fileName");
+        }
+
+        if (strpos($fileName, '..') !== false) {
+            exitError(400, "Invalid file name $fileName");
+        }
+
+        $full_path = __DIR__ . $this->folderPath . '/' . $fileName;
+
+        rename($tmpName, $full_path);
     }
 
     /**
@@ -51,7 +67,7 @@ class PhotoController {
      * @param integer $recordID
      */
     public function updatePhotos($recordID) {
-        $photos = $_FILES['photos'];
+        $photos = $this->files['photos'];
 
         $existingPhotos = $this->baseModel->getAllReferencesBy($recordID);
         //Get missing/deleted photos
@@ -69,8 +85,8 @@ class PhotoController {
             $this->uploadPhoto([
                 $this->typeIDField . '_id' => $recordID, 
                 'photo_reference' => $photoPath, 
-                'alt_text' => $_REQUEST['alt_text'][$photoKey],
-                'caption' => $_REQUEST['caption'][$photoKey],
+                'alt_text' => $this->data['alt_text'][$photoKey] ?? null,
+                'caption' => $this->data['caption'][$photoKey] ?? null,
             ], $photos['tmp_name'][$photoKey]);
         }
     }

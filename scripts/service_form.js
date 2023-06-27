@@ -18,7 +18,7 @@ document.getElementById('service-form').addEventListener('submit', (e) => {
     }
 
     // Get input
-    var formInput= new FormData();
+    var formInput = new FormData();
     formInput.append('servicer_id', userID);
     formInput.append('title', document.getElementById('title').value.trim());
     formInput.append('avg_price', document.getElementById('avg_price').value.trim());

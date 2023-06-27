@@ -22,12 +22,14 @@ class ServiceController implements IController {
     private static $photoController;
     private static $errors;
     private static $data;
-    
+    private static $files;
+
     private function __construct() {}
 
     public static function __constructStatic() {
         self::$photoController = new PhotoController('service', 'service_photo', '/../../../photos/services');
         self::$data = readRequestBody();
+        self::$files = self::$data["files"] ?? [];
     }
 
     /**
@@ -148,7 +150,7 @@ class ServiceController implements IController {
         self::validateDescription(self::$data['description'] ?? null);
         self::validateAvgPrice(self::$data['avg_price'] ?? null);
         self::validateTags(self::$data['tags'] ?? null);
-        self::$photoController->validatePhotos($_FILES['photos']['name'] ?? null, self::$data['alt_texts'] ?? null, self::$data['captions'] ?? null);
+        self::$photoController->validatePhotos(self::$files['photos']['name'] ?? null, self::$data['alt_texts'] ?? null, self::$data['captions'] ?? null);
 
         if(self::$photoController->errors)
             self::$errors = array_merge(self::$errors, self::$photoController->errors);
@@ -170,7 +172,7 @@ class ServiceController implements IController {
             $service_id = Service::insert($input);
             if ($service_id !== false) {
                 $serviceID = Service::$baseModel->db->lastInsertId();
-                $photos = $_FILES['photos'];
+                $photos = self::$files['photos'];
 
                 //Upload photos of the service
                 for($i = 0; $i < count($photos['name']); $i++)
@@ -245,8 +247,8 @@ class ServiceController implements IController {
             $update['avg_price'] = self::$data['avg_price'];
         }
 
-        if(isset($_FILES['photos'])) {
-            self::$photoController->validatePhotos($_FILES['photos']['name'], self::$data['alt_texts'], self::$data['captions']);
+        if(isset(self::$files['photos'])) {
+            self::$photoController->validatePhotos(self::$files['photos']['name'], self::$data['alt_texts'], self::$data['captions']);
 
             if(self::$photoController->errors)
             self::$errors = array_merge(self::$errors, self::$photoController->errors);
@@ -268,7 +270,7 @@ class ServiceController implements IController {
         }
 
         //Update photos & tags
-        if(isset($_FILES['photos']))
+        if(isset(self::$files['photos']))
             self::$photoController->updatePhotos($serviceID);
         
         if(isset(self::$data['tags']))

@@ -98,7 +98,7 @@ async function editRequest(elementID) {
                 </div>
                 
                 <div>
-                    <label for="time">Date:</label>
+                    <label for="time">Time:</label>
                     <input type="time" id="time" value="${time}">
                 </div>
             </div>
@@ -144,15 +144,18 @@ function submitEdit(elementID, elements) {
         } 
     }
 
+    const inputKeys = ['title', 'scheduled_date', 'description'];
     const input = [document.getElementById('title').value.trim(), 
-                document.getElementById('date').value + ' ' + document.getElementById('time').value,
+                document.getElementById('date').value + ' ' + document.getElementById('time').value + ':00',
                 document.getElementById('description').value.trim()];
-    var formInput= new FormData();
+
+    var formInput = {};
     
     for(var i = 0; i < elements.length; i++) {
         if(elements[i] != input[i])
-            formInput.append(input[i].id, input[i]);
+            formInput[inputKeys[i]] = input[i];
     }
 
-    request.send(formInput);
+    request.setRequestHeader('Content-Type', 'application/json');
+    request.send(JSON.stringify(formInput));
 }

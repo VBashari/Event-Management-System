@@ -31,7 +31,7 @@ $user = require_once __DIR__ . '/../auth.php';
                     <i class="fa fa-user"></i>&nbsp;&nbsp;My Profile
                 </a>
                 <div class="dropdown-menu" aria-labelledby="profileDropdown">
-                    <a class="dropdown-item" href="dashboard.php">Dashboard</a>
+                    <a class="dropdown-item" href="/user_dashboard/dashboard.php">Dashboard</a>
                     <a class="dropdown-item" href="/" onclick="signOut();">Sign out</a>
                 </div>
             </li>
