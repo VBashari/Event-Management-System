@@ -9,8 +9,8 @@ Certain API endpoints require authentication. To authenticate create a new sessi
 
 Certain API endpoints require a request body. The following content types are supported:
 - JSON (application/json)
-- Multipart form data (multipart/formdata)
-- Query strings
+- Multipart form data (multipart/form-data)
+- Query strings (application/x-www-form-urlencoded)
 
 Notes:
 - Form data is only supported for POST requests.

@@ -79,7 +79,7 @@ function readRequestBody() {
         
         return $data;
     } 
-    else {
+    elseif (strpos($contentType, 'application/x-www-form-urlencoded') !== false) {
         parse_str($body, $data);
         $files = getPhotos($data);
         $data['files'] = $files;
